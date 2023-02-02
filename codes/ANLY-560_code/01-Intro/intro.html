@@ -7,34 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Time Series</title>
+<title>Project Introduction</title>
 <style>
-.child-top { background-image: url('https://www.georgetown.edu/wp-content/uploads/2019/09/20150324-Campus_0006-2-2000x1125-c--dark-default.jpg');height: 230px;margin: 0%;display: flex;flex-direction: row;justify-content:space-between} 
-.nav_bar {
-   width: 260px;
-   float: left;
-   position: sticky;
-   height: 100%;
-   overflow: auto;
-   padding-left: 10px;
-   padding-right: 20px;
-   padding-bottom: 20px;
-   background-color: rgb(233, 231, 231);
- }
-
-.nav_bar a:link{color:black ;}
-.nav_bar a:visited{color:black;}
-.nav_bar li {
-   list-style-type: square;
-   padding-top: 20px;
- }
-.nav_bar a{
-   display: block;
-   padding-top: 5px;
-   text-decoration: none;
-   font-size: 18px;
-   font-weight:normal;
- }
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -49,71 +23,29 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="index_files/libs/clipboard/clipboard.min.js"></script>
-<script src="index_files/libs/quarto-html/quarto.js"></script>
-<script src="index_files/libs/quarto-html/popper.min.js"></script>
-<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="index_files/libs/quarto-html/anchor.min.js"></script>
-<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="intro_files/libs/clipboard/clipboard.min.js"></script>
+<script src="intro_files/libs/quarto-html/quarto.js"></script>
+<script src="intro_files/libs/quarto-html/popper.min.js"></script>
+<script src="intro_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="intro_files/libs/quarto-html/anchor.min.js"></script>
+<link href="intro_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="intro_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="intro_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="intro_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="intro_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body>
-  <div class="child-top">  
-    <div class = subtitle>
-      <p style="font-size:70px ;color:#d6d3c9;padding-left: 80px;border-right: 6px solid #d6d3c9 ;padding-right: 30px;padding-top: 50px;">
-          Yichen Guo
-      </p>
-  </div>
-
-<div class="last-word" style="padding-right:80px ;padding-top: 30px;">
-    <h1 style="color: #d6d3c9;text-align:right;">
-          ANLY-560 Time Series 
-    </h1>
-    <p style="color:grey;margin-top: -15px;text-align:right;">
-      <a href="../../index.html">Return to the Home page</a>
-  </p>
-    <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
-        &copy; 2022, hosted by GU domain
-       </p>      
-    </div>
-</div>
-
-<div class="nav_bar">
-  <ul>
-  <li><a href="../00-about_me/index.html">About Me</a></li>
-  <li><a href="../02-introduction/intro.html">Introduction</a></li>
-  <li><a href="./pages//data-gathering/data-gathering-page.html">Data Sources</a></li>
-  <li><a href="../01-data_visual/lab0.html">Data Visualization</a></li>
-  <li><a href="./pages/exploring_data/data-exploring.html">Exploratory Data Analysis</a></li>
-  <li><a href="./pages/Naive-Bayes/naive-bayes.html">ARMA/ARIMA/SARIMA Models</a></li>
-  <li><a href="./pages/decision-tree/decision-tree.html">Spectral Analysis and Filtering</a></li>
-  <li><a href="./pages/svm/SVM.html">Financial Time Series Models</a></li>
-  <li><a href="./pages/clustering/clustering.html">Deep Learning for TS</a></li>
-  <li><a href="./pages/arm/ARM.html">Conclusions</a></li>
-  </ul>
-</div>
+<body class="fullcontent">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-  <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#what-is-time-series" id="toc-what-is-time-series" class="nav-link active" data-scroll-target="#what-is-time-series">What is Time Series?</a></li>
-  </ul>
-</nav>
-</div>
+
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Time Series</h1>
+<h1 class="title">Project Introduction</h1>
 </div>
 
 
@@ -128,21 +60,40 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="what-is-time-series" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-time-series">What is Time Series?</h2>
-<p><br><br> <img src="ts.jpeg" class="img-fluid"></p>
-<center>
-<em>The Seasonality of Time Series</em>
-</center>
-<p><br><br></p>
-<ul>
-<li><p>Any metric that is measured over regular time intervals makes a Time Series.</p>
-<ul>
-<li>Example: Weather data, Stock prices, Industry forecasts, etc are some of the common ones.</li>
-</ul></li>
-<li><p>The analysis of experimental data that have been observed at different points in time leads to new and unique problems in statistical modeling and inference.</p></li>
-<li><p>The obvious correlation introduced by the sampling of adjacent points in time can severely restrict the applicability of the many conventional statistical methods traditionally dependent on the assumption that these adjacent observations are independent and identically distributed.</p></li>
-</ul>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Predicting the future of stock market might be the most tempting task for all traders, as a result, many tools are developed in order to provide a valid prediction of the future of the major index such as the Dows, Nasdaq Index or the S&amp;P 500, one of the measurement that many people use is the market breadth.</p>
+<blockquote class="blockquote">
+<p>The market is made up of thousands of stocks. And on any given day, investors are actively buying and selling them. This measure looks at the amount, or volume, of shares on the NYSE that are rising compared to the number of shares that are falling. A low (or even negative) number is a bearish sign.</p>
+<p>–CNN Business</p>
+</blockquote>
+</section>
+<section id="project-description" class="level2">
+<h2 class="anchored" data-anchor-id="project-description">Project Description</h2>
+<p>In this project, I will create my own version of market breadth thats different from the CNN version and make it more sensitive to price change everday. And there will be two major question for me to analysis:</p>
+<blockquote class="blockquote">
+<ol type="1">
+<li>What is the relationship between stock market breadth and overall market performance?</li>
+<li>Can stock market breadth be used as a leading indicator for future market trends?</li>
+</ol>
+</blockquote>
+</section>
+<section id="more-data-science-question" class="level2">
+<h2 class="anchored" data-anchor-id="more-data-science-question">More Data science question</h2>
+<blockquote class="blockquote">
+<ol type="1">
+<li>What is the relationship between stock market breadth and overall market performance?</li>
+<li>Can stock market breadth be used as a leading indicator for future market trends?</li>
+<li>What are the effects of macroeconomic events, such as recessions, on stock market breadth?</li>
+<li>How accurate is the market breadth as an indicator of the market future?</li>
+<li>What role does sentiment play in the relationship between stock market breadth and market performance?</li>
+<li>Can stock market breadth be used to identify overbought or oversold market conditions?</li>
+<li>Does extreme market breath always means the turn in the stock market?</li>
+<li>How do sector-specific market breadth indices compare to overall market breadth indices?</li>
+<li>How does the use of different breadth measures, such as advance-decline ratio or new highs-new lows, impact the relationship between stock market breadth and market performance?</li>
+<li>What else could use as an indicator for the market trend?</li>
+</ol>
+</blockquote>
 </section>
 
 </main>

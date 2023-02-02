@@ -14,10 +14,32 @@
         .skill_box{display:flex; flex-direction: column;align-items: center;}
         .about_skills{display:flex; flex-direction: column;}
         .mid_part{padding-top: 80px;padding-bottom: 80px;background-color: #f9f9f9;}
-        .nav_bar{border-bottom: gray solid 3px;display:flex; flex-direction: row;justify-content:flex-start;padding-left: 25%;background-color:	#bed9f3;padding-top: 22px;padding-bottom: 21px;}        
-        .nav_bar a:link{color:black ;}
-        .nav_bar a:visited{color:black;}
-        .nav_bar a{text-decoration: none;margin-left: 25px;font-size: 18px;font-weight:normal;}
+        .nav_bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: gray solid 3px;
+  background-color: #bed9f3;
+  padding-top: 22px;
+  padding-bottom: 21px;
+}
+
+.nav_bar a {
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: normal;
+  color: black;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 10%; /* adjust this value to set the width of each tab */
+  text-align: center;
+  margin-right: 2%; /* adjust this value to set the margin between each tab */
+}
+
+.nav_bar a:last-child {
+  margin-right: 0; /* remove margin for the last tab */
+}
         *{
         font-family: 'Times New Roman', Times, serif;
         }
@@ -37,6 +59,9 @@
         <h1 style="color: #d6d3c9;text-align:right;">
               Yichen's Anly-501 Project 
         </h1>
+        <p style="color:grey;margin-top: -15px;text-align:right;">
+            <a href="../my_web/index.html">Return to the Home page</a>
+        </p>
         <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
             &copy; 2022, hosted by GU domain
            </p>      
