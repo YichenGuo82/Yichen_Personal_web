@@ -11,18 +11,19 @@ format:
       df_print: paged
 ---
 
-## What is Time Series?
+In order to develop a sufficient and efficient market breadth measurement model, I'm going to collect the daily change of each ticker within the S&P 500 from the past, which the data source I'm going to be using is the Yahoo Finance, which I believe will give me the needed data and insights for market breadth cacluation. 
 
-<br></br> ![](ts.jpeg)
+## Yahoo Fianance
 
-<center>*The Seasonality of Time Series*</center>
+![](yahoo.png)
 
-<br></br>
+<center>*Yahoo Finance S&P 500 Historical Data*</center>
+<br></br> 
 
--   Any metric that is measured over regular time intervals makes a Time Series.
+Yahoo Finance is a popular financial website that provides access to a wide range of financial information, including stock market data. It is a comprehensive platform that offers real-time quotes, financial news, and investment tools for individuals and professionals. In the context of this project, we can use Yahoo Finance to obtain historical data for all stocks in the S&P 500 index. This data includes the opening and closing prices for each stock on a daily basis. To access this information, we can simply search for the desired stock on the Yahoo Finance website and view its historical price data. This data can then be used to analyze market trends, calculate financial metrics, and develop a market breadth model.
 
-    -   Example: Weather data, Stock prices, Industry forecasts, etc are some of the common ones.
+## R quantmod package
 
--   The analysis of experimental data that have been observed at different points in time leads to new and unique problems in statistical modeling and inference.
+The R quantmod package is a powerful tool for financial market analysis. It is a comprehensive package that provides a range of functions for manipulating, modeling, and visualizing financial market data. In this project, we can use the quantmod package to easily import and analyze the data obtained from Yahoo Finance. The package allows us to quickly retrieve historical price data for all stocks in the S&P 500 index and perform a wide range of technical and fundamental analysis. With quantmod, we can calculate various financial metrics, create custom financial models, and visualize market trends and patterns. The package also offers a number of advanced features, such as automated trading strategies, that can help us to develop a market breadth model and make informed investment decisions.
 
--   The obvious correlation introduced by the sampling of adjacent points in time can severely restrict the applicability of the many conventional statistical methods traditionally dependent on the assumption that these adjacent observations are independent and identically distributed.
+[R quantmod](https://cran.r-project.org/web/packages/quantmod/quantmod.pdf)

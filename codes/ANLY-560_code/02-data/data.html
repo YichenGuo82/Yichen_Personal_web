@@ -7,9 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Project Introduction</title>
+<title>Data Source</title>
 <style>
-.child-top { background-image: url('https://www.georgetown.edu/wp-content/uploads/2019/09/20150324-Campus_0006-2-2000x1125-c--dark-default.jpg');height: 230px;margin: 0%;display: flex;flex-direction: row;justify-content:space-between} 
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -24,49 +23,38 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="intro_files/libs/clipboard/clipboard.min.js"></script>
-<script src="intro_files/libs/quarto-html/quarto.js"></script>
-<script src="intro_files/libs/quarto-html/popper.min.js"></script>
-<script src="intro_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="intro_files/libs/quarto-html/anchor.min.js"></script>
-<link href="intro_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="intro_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="intro_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="intro_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="intro_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="data_files/libs/clipboard/clipboard.min.js"></script>
+<script src="data_files/libs/quarto-html/quarto.js"></script>
+<script src="data_files/libs/quarto-html/popper.min.js"></script>
+<script src="data_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="data_files/libs/quarto-html/anchor.min.js"></script>
+<link href="data_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="data_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="data_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="data_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="data_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body class="fullcontent">
+<body>
 
-    <div class="child-top">  
-      <div class = subtitle>
-        <p style="font-size:70px ;color:#d6d3c9;padding-left: 100px;padding-top: 30px;border-right: 6px solid #d6d3c9 ;padding-right: 30px;">
-       Introduction
-        </p>
-    </div>
-  
-  <div class="last-word" style="padding-right:100px ;padding-top: 30px;">
-      <h1 style="color: #d6d3c9;text-align:right;">
-            ANLY-560 Time Series 
-      </h1>
-      <p style="color:grey;margin-top: -15px;text-align:right;">
-          <a href="../0-Time_index/index.html"">Return to the Home page</a>
-      </p>
-      <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
-        &copy; 2022, hosted by GU domain
-       </p>        
-      </div>
-  </div>
- 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#yahoo-fianance" id="toc-yahoo-fianance" class="nav-link active" data-scroll-target="#yahoo-fianance">Yahoo Fianance</a></li>
+  <li><a href="#r-quantmod-package" id="toc-r-quantmod-package" class="nav-link" data-scroll-target="#r-quantmod-package">R quantmod package</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Project Introduction</h1>
+<h1 class="title">Data Source</h1>
 </div>
 
 
@@ -81,40 +69,20 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Predicting the future of stock market might be the most tempting task for all traders, as a result, many tools are developed in order to provide a valid prediction of the future of the major index such as the Dows, Nasdaq Index or the S&amp;P 500, one of the measurement that many people use is the market breadth.</p>
-<blockquote class="blockquote">
-<p>The market is made up of thousands of stocks. And on any given day, investors are actively buying and selling them. This measure looks at the amount, or volume, of shares on the NYSE that are rising compared to the number of shares that are falling. A low (or even negative) number is a bearish sign.</p>
-<p>–CNN Business</p>
-</blockquote>
+<p>In order to develop a sufficient and efficient market breadth measurement model, I’m going to collect the daily change of each ticker within the S&amp;P 500 from the past, which the data source I’m going to be using is the Yahoo Finance, which I believe will give me the needed data and insights for market breadth cacluation.</p>
+<section id="yahoo-fianance" class="level2">
+<h2 class="anchored" data-anchor-id="yahoo-fianance">Yahoo Fianance</h2>
+<p><img src="yahoo.png" class="img-fluid"></p>
+<center>
+<em>Yahoo Finance S&amp;P 500 Historical Data</em>
+</center>
+<p><br><br></p>
+<p>Yahoo Finance is a popular financial website that provides access to a wide range of financial information, including stock market data. It is a comprehensive platform that offers real-time quotes, financial news, and investment tools for individuals and professionals. In the context of this project, we can use Yahoo Finance to obtain historical data for all stocks in the S&amp;P 500 index. This data includes the opening and closing prices for each stock on a daily basis. To access this information, we can simply search for the desired stock on the Yahoo Finance website and view its historical price data. This data can then be used to analyze market trends, calculate financial metrics, and develop a market breadth model.</p>
 </section>
-<section id="project-description" class="level2">
-<h2 class="anchored" data-anchor-id="project-description">Project Description</h2>
-<p>In this project, I will create my own version of market breadth thats different from the CNN version and make it more sensitive to price change everday. And there will be two major question for me to analysis:</p>
-<blockquote class="blockquote">
-<ol type="1">
-<li>What is the relationship between stock market breadth and overall market performance?</li>
-<li>Can stock market breadth be used as a leading indicator for future market trends?</li>
-</ol>
-</blockquote>
-</section>
-<section id="more-data-science-question" class="level2">
-<h2 class="anchored" data-anchor-id="more-data-science-question">More Data science question</h2>
-<blockquote class="blockquote">
-<ol type="1">
-<li>What is the relationship between stock market breadth and overall market performance?</li>
-<li>Can stock market breadth be used as a leading indicator for future market trends?</li>
-<li>What are the effects of macroeconomic events, such as recessions, on stock market breadth?</li>
-<li>How accurate is the market breadth as an indicator of the market future?</li>
-<li>What role does sentiment play in the relationship between stock market breadth and market performance?</li>
-<li>Can stock market breadth be used to identify overbought or oversold market conditions?</li>
-<li>Does extreme market breath always means the turn in the stock market?</li>
-<li>How do sector-specific market breadth indices compare to overall market breadth indices?</li>
-<li>How does the use of different breadth measures, such as advance-decline ratio or new highs-new lows, impact the relationship between stock market breadth and market performance?</li>
-<li>What else could use as an indicator for the market trend?</li>
-</ol>
-</blockquote>
+<section id="r-quantmod-package" class="level2">
+<h2 class="anchored" data-anchor-id="r-quantmod-package">R quantmod package</h2>
+<p>The R quantmod package is a powerful tool for financial market analysis. It is a comprehensive package that provides a range of functions for manipulating, modeling, and visualizing financial market data. In this project, we can use the quantmod package to easily import and analyze the data obtained from Yahoo Finance. The package allows us to quickly retrieve historical price data for all stocks in the S&amp;P 500 index and perform a wide range of technical and fundamental analysis. With quantmod, we can calculate various financial metrics, create custom financial models, and visualize market trends and patterns. The package also offers a number of advanced features, such as automated trading strategies, that can help us to develop a market breadth model and make informed investment decisions.</p>
+<p><a href="https://cran.r-project.org/web/packages/quantmod/quantmod.pdf">R quantmod</a></p>
 </section>
 
 </main>
