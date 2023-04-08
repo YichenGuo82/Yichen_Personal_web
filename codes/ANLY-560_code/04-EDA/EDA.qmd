@@ -27,13 +27,48 @@ library(quantmod)
 library(tidyquant)
 library(plotly)
 library(ggplot2)
+library(dplyr)
+library(zoo)
+library(pracma)
+library(lubridate)
 ```
 
+As mentioned in the data gathering section, the market breadth data was developed from the sub sector of SPX. S&P500 stock can be categorized into 11 sectors according to Global Industry Classification Standards (GICS) based on their primary business. Each sector’s Breadth score ranges from 0 to 100, indicating the percentage of stocks of which the share price is above the 20-day simple moving average (20-day SMA). The maximum Breadth score for S&P500 is 1100 by the summation of all the 11 sectors. This is one of the ways to gauge the SPX stock market sentiment. Empirically, when the total score is greater than 1000, or less than 200, we identify the sentiment entering extreme regimes.
+
+In this page we will do more data exploratory analysis on the dataset we have. 
+
+## Market Breadth Time Series Plot
+
+```{r, warning=FALSE, message=FALSE}
+
+spx_breadth_data <- read_csv("spx_market_breadth.csv") %>%
+  mutate(Date = ymd(Date)) %>%
+  rename(Breadth = `0`)
+
+tail(spx_breadth_data)
+```
+
+```{r}
+# Create a daily time series
+spx_breadth_ts <- ts(spx_breadth_data$Breadth, start =decimal_date(as.Date("2020-04-07", format="%Y-%m-%d")), frequency = 365.25)
+plot_ly(x=time(spx_breadth_ts), y=spx_breadth_ts, type = "scatter", mode="lines", name="temp") %>%
+  layout(xaxis= list(title = "Date",rangeslider = list(type = "date")),
+         yaxis= list(title = "Market Breath"),
+         title = "SPX Market Breadth")
+
+```
+
+- Trend: There doesn't appears to have a clear trend as the time goes.
+- Seasonality: There seems to be some pattern but not sure about seasonality.
+- Variation: There is significant variation in the price of SPY over the period, with some periods of rapid growth and some periods of decline.
+- Periodic fluctuations: There are some periodic fluctuations in the data, but they are not clear from this plot. It is possible that a more detailed analysis of the data would reveal periodic fluctuations at different time scales.
+
+In terms of whether the time series is multiplicative or additive, it's difficult to tell definitively from the plot alone. A common approach to determining whether a time series is multiplicative or additive is to decompose it into its components (trend, seasonality, etc.) 
 
 ## SPY Time Series Plot
 
 ```{r}
-spy <- getSymbols("SPY",auto.assign = FALSE, from = "2017-10-01",src="yahoo") 
+spy <- getSymbols("SPY",auto.assign = FALSE, from = "2020-04-07",src="yahoo") 
 spy=data.frame(spy)
 spy <- data.frame(spy,rownames(spy))
 
@@ -54,12 +89,41 @@ ts_adjusted <- as.ts(spy[,"SPY.Adjusted"], frequency = 1)
 
 In terms of whether the time series is multiplicative or additive, it's difficult to tell definitively from the plot alone. A common approach to determining whether a time series is multiplicative or additive is to decompose it into its components (trend, seasonality, etc.) 
 
+```{r}
+smooth_time_series <- function(data) {
+  x <- as.numeric(data$Date)
+  y <- data$Breadth
+  X_ <- seq(min(x), max(x), length.out = 10000)
+  Y_ <- pchip(x, y, X_)
+  X_ <- as.Date(X_, origin = "1970-01-01")
+  # Make sure the first date is 2020-04-07
+  X_[1] <- as.Date("2020-04-07")
+  return(data.frame(Date = X_, Breadth = Y_))
+}
+
+smoothed_data <- smooth_time_series(spx_breadth_data)
+
+p <- plot_ly() %>%
+  add_trace(data = smoothed_data, x = ~Date, y = ~Breadth, type = "scatter", mode = "lines", name = "Smoothed Market Breadth") %>%
+  add_trace(data = spy, x = ~date, y = ~SPY.Adjusted, type = "scatter", mode = "lines", name = "SPY Adjusted Price", yaxis = "y2") %>%
+  layout(title = "Smoothed SPX Market Breadth and SPY Adjusted Price",
+         xaxis = list(title = "Date",rangeslider = list(type = "date")),
+         yaxis = list(title = "Breadth"),
+         yaxis2 = list(title = "SPY Price", overlaying = "y", side = "right"))
+
+p
+
+```
+The market breadth was smoothed for better representation. 
+
+However, From this we can clearly see that the market breadth index is continuing oscillating between the range of 0 and 1000, while the overall stock market price follows a steady upward trends. However, further analysis is needed for more analysis on the market breadth index.
+
 ### Lag plot
 ```{r}
-ts_lags(ts_adjusted, lags=1:6)
+ts_lags(spx_breadth_ts, lags=1:6)
 ```
 
-The lag plot of SPY shown an steady upward trend, suggests the presence of positive autocorrelation in the SPY stock price and it's lagged price. It suggests that past values of the time series **can be used to predict** future values, and that simple models that assume the time series is constant over time may not be appropriate.
+The lag plot of SPX market breath shown an steady upward trend, suggests the presence of positive autocorrelation in the market breadth price and it's lagged price for mostly three days. It suggests that past values of the time series **can be used to predict** future values, and that simple models that assume the time series is constant over time may not be appropriate.
 
 ### Decompose of the SPY time series plot (Not Applicable)
 
@@ -68,7 +132,7 @@ The lag plot of SPY shown an steady upward trend, suggests the presence of posit
 try({decomp <- decompose(ts_adjusted)})
 ```
 
-From the code we have learn that this dataset has **no periods**, it means that there is no clear and consistent repeating pattern in the data. Thus the traditional decompose() or stl() dosn't work on the dataset.
+From the code we have learn that this data set has **no periods**, it means that there is no clear and consistent repeating pattern in the data. Thus the traditional decompose() or stl() don't work on the dataset.
 
 In general, stock prices are considered to be non-periodic because they do not exhibit a clear and consistent repeating pattern over time with a fixed period. The fluctuations in stock prices are influenced by a complex and ever-changing set of factors, such as company performance, economic indicators, geopolitical events, and investor sentiment, among others. These factors can cause stock prices to rise or fall in unpredictable ways that are difficult to forecast.
 
@@ -112,7 +176,7 @@ grid.arrange(plot1, plot2,nrow=2)
 
 From the graph we can see that detrending (the residuals of the linear regression model fit to the time series) the time series doesn't remove the  patterns or trends in the residuals, indicating the linear model is not a good fit for the data. 
 
-However, differencing (the change in value from one time period to the next) successfully make the distributed around zero, which means that there is no systematic increase or decrease in the values of the time series from one time period to the next. In other words, the difference between consecutive observations in the time series is centered around zero, indicating the first order differences of SPY is **stationary**.
+However, difference (the change in value from one time period to the next) successfully make the distributed around zero, which means that there is no systematic increase or decrease in the values of the time series from one time period to the next. In other words, the difference between consecutive observations in the time series is centered around zero, indicating the first order differences of SPY is **stationary**.
 
 ### ACF and PACF plot on First Differences
 
@@ -123,7 +187,7 @@ plot4 <- ggPacf(diff(ts_adjusted))+ggtitle("PACF of First Differences of SPY Adj
 grid.arrange(plot3, plot4,nrow=2)
 ```
 
-Now the acf plot incidate the first difference of SPY adjusted close price is stationary and we could utilized it for further analysis such as the ARIMA modeling. 
+Now the acf plot indicate the first difference of SPY adjusted close price is stationary and we could utilized it for further analysis such as the ARIMA modeling. 
 
 ## Linear regression on the fit the SPY dataset
 

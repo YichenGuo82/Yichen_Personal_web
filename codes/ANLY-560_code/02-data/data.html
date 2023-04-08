@@ -9,6 +9,7 @@
 
 <title>Data Source</title>
 <style>
+.child-top { background-image: url('https://www.georgetown.edu/wp-content/uploads/2019/09/20150324-Campus_0006-2-2000x1125-c--dark-default.jpg');height: 230px;margin: 0%;display: flex;flex-direction: row;justify-content:space-between} 
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -39,6 +40,26 @@ ul.task-list li input[type="checkbox"] {
 
 <body>
 
+<div class="child-top">  
+    <div class = subtitle>
+      <p style="font-size:70px ;color:#d6d3c9;padding-left: 100px;padding-top: 30px;border-right: 6px solid #d6d3c9 ;padding-right: 30px;">
+     Introduction
+      </p>
+  </div>
+
+<div class="last-word" style="padding-right:100px ;padding-top: 30px;">
+    <h1 style="color: #d6d3c9;text-align:right;">
+          ANLY-560 Time Series 
+    </h1>
+    <p style="color:grey;margin-top: -15px;text-align:right;">
+        <a href="../0-Time_index/index.html">Return to the Home page</a>
+    </p>
+    <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
+      &copy; 2022, hosted by GU domain
+     </p>        
+    </div>
+</div>
+
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
@@ -47,6 +68,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#yahoo-fianance" id="toc-yahoo-fianance" class="nav-link active" data-scroll-target="#yahoo-fianance">Yahoo Fianance</a></li>
   <li><a href="#r-quantmod-package" id="toc-r-quantmod-package" class="nav-link" data-scroll-target="#r-quantmod-package">R quantmod package</a></li>
+  <li><a href="#breath.app-and-jamesdellingergithub" id="toc-breath.app-and-jamesdellingergithub" class="nav-link" data-scroll-target="#breath.app-and-jamesdellingergithub">Breath.app and jamesdellinger@Github</a></li>
   </ul>
 </nav>
 </div>
@@ -83,6 +105,17 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="r-quantmod-package">R quantmod package</h2>
 <p>The R quantmod package is a powerful tool for financial market analysis. It is a comprehensive package that provides a range of functions for manipulating, modeling, and visualizing financial market data. In this project, we can use the quantmod package to easily import and analyze the data obtained from Yahoo Finance. The package allows us to quickly retrieve historical price data for all stocks in the S&amp;P 500 index and perform a wide range of technical and fundamental analysis. With quantmod, we can calculate various financial metrics, create custom financial models, and visualize market trends and patterns. The package also offers a number of advanced features, such as automated trading strategies, that can help us to develop a market breadth model and make informed investment decisions.</p>
 <p><a href="https://cran.r-project.org/web/packages/quantmod/quantmod.pdf">R quantmod</a></p>
+</section>
+<section id="breath.app-and-jamesdellingergithub" class="level2">
+<h2 class="anchored" data-anchor-id="breath.app-and-jamesdellingergithub">Breath.app and jamesdellinger@Github</h2>
+<p>S&amp;P500 stock can be categorized into 11 sectors according to Global Industry Classification Standards (GICS) based on their primary business. Each sector’s Breadth score ranges from 0 to 100, indicating the percentage of stocks of which the share price is above the 20-day simple moving average (20-day SMA). The maximum Breadth score for S&amp;P500 is 1100 by the summation of all the 11 sectors. This is one of the ways to gauge the SPX stock market sentiment. Empirically, when the total score is greater than 1000, or less than 200, we identify the sentiment entering extreme regimes.</p>
+<p>The breath.app provide a stunning visualization on the market breadth index and it’s subsectors, however, in order to retrive the actual historical market breadth data, jamesdellinger at Github provide a similar replication on the visualization and the calcuatation of the market breadth data.</p>
+<p><img src="breadth.png" class="img-fluid"></p>
+<center>
+<em>Breath visualization of the S&amp;P 500 Market Breadth Data</em>
+</center>
+<p><a href="https://breadth.app/breadth">Breath.app</a></p>
+<p><a href="https://github.com/jamesdellinger/market_breadth">jamesdellinger’s replicate of Breath.app</a></p>
 </section>
 
 </main>
