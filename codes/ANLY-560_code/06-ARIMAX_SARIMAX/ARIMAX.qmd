@@ -1,0 +1,202 @@
+---
+title: "ARIMAX"
+format:
+  html:
+    code-fold: true
+    theme: custom.scss
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+      df_print: paged
+---
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+library(flipbookr)
+library(tidyverse)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(dplyr)
+library(zoo)
+library(pracma)
+library(lubridate)
+library(vars)
+```
+
+
+### Vector autoregression (VAR)
+
+I decide to use VAR model because, the model captures the linear dependencies between the different time series. The main assumption in VAR is that all variables are endogenous, meaning that they are influenced by each other, which I believe is the case for my analysis.
+
+### Data Processing
+
+```{r, warning=FALSE, message=FALSE}
+# Read the market breadth data
+spx_breadth_data <- read_csv("spx_market_breadth.csv") %>%
+  mutate(Date = ymd(Date)) %>%
+  rename(Breadth = `0`)
+
+# Define the sector symbols and the VIX index
+symbols <- c("XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY", "^VIX","SPY")
+
+# Initialize an empty data frame for the price data
+price_data <- data.frame()
+
+# Loop through the symbols
+for (symbol in symbols) {
+  # Get the adjusted price data
+  tmp <- tq_get(symbol, from = "2020-04-07", to = Sys.Date(), get = "stock.prices", source = "yahoo") %>%
+    dplyr::select(date, adjusted) %>%
+    dplyr::rename(!!symbol := adjusted)
+  
+  # Merge the data into the price_data data frame
+  if (nrow(price_data) == 0) {
+    price_data <- tmp
+  } else {
+    price_data <- price_data %>%
+      dplyr::full_join(tmp, by = "date")
+  }
+}
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+# Merge the price data with the market breadth data
+spx_full <- spx_breadth_data %>%
+  dplyr::full_join(price_data, by = c("Date" = "date"))
+
+# Display the final data
+tail(spx_full)
+
+```
+
+
+### Variable selection
+
+Since the market breadth is a measurement of the SPX stock market sentiment, thus it is reasonable to believe that it should correlated with **"^VIX"**, Chicago Board Options Exchange's CBOE Volatility Index, a popular measure of the stock market's expectation of volatility based on S&P 500 index options. 
+
+Also XLK, XLF, XLI and other sector are the subsectors of the SPX market, they are important component when calculating the market breadth (by summing the market breadth of each sector). Since **XLK** (etf that track the information technology) and **XLF** (Financial Select Sector SPDR Fund) are the two most prominent etf that tracking the subsectors of the S&P 500, also including the stock tickers that worth 40% of the total S%P 500.
+
+I will also include **SPY** into the model since SPY is the etf that tracking the S&P500 index, which I believe should be correlated with the market breadth. 
+
+```{r}
+# Select Date, Breadth, XLF, XLK, ^VIX, SPY columns
+spx_selected <- spx_full %>%
+  dplyr::select(Date, Breadth, XLF, XLK, `^VIX`, SPY)
+
+tail(spx_selected)
+```
+```{r}
+spx_ts = ts(spx_selected, start = decimal_date(as.Date("2020-04-07", format = "%Y-%m-%d")),frequency = 365.25)
+
+autoplot(spx_ts[,c(2:6)], facets= TRUE)+
+  xlab("Date")+ylab("") +
+  ggtitle("Market Breadth, XLK, XLF, VIX and SPY since 2020-04-07")
+
+```
+
+### Model Selection and Fitting
+
+```{r}
+VARselect(spx_selected[,c(2:6)], lag.max = 10, type = "both")
+```
+It is clear that according to selection criteria p=1 are good. This also make the model selection much easier as there's no need for model comparison since there's only 1 possible choice of p.
+
+```{r}
+best_model = VAR(spx_selected[,c(2:6)], p=1, type = 'both')
+summary(best_model)
+```
+
+
+### Model Forecast
+
+```{r}
+# Forecast using the model
+n_periods <- 30 # Specify the number of periods for the forecast
+forecast <- predict(best_model, n.ahead = n_periods)
+
+# Display the forecast results
+# print(forecast$fcst)
+
+# Convert the forecasts to a data frame
+forecast_df <- data.frame(forecast$fcst)
+
+# Create a new data frame with the original data and the forecasts
+original_data_end <- tail(spx_selected, n = 1)$Date
+forecast_dates <- seq(from = original_data_end + 1, by = 1, length.out = n_periods)
+forecast_df <- data.frame(Date = forecast_dates, forecast_df)
+
+# Select only the forecast columns
+forecast_df <- forecast_df %>%
+  dplyr::select(Date, Breadth = Breadth.fcst, XLF = XLF.fcst, XLK = XLK.fcst, `^VIX` = X.VIX.fcst, SPY = SPY.fcst)
+
+# Combine original data and forecasts
+combined_data <- rbind(spx_selected, forecast_df)
+
+# Convert combined_data to a long format
+combined_data_long <- combined_data %>%
+  tidyr::pivot_longer(cols = -Date, names_to = "Variable", values_to = "Value")
+
+# Create an interactive plot with a range slider
+p <- plot_ly(data = combined_data_long, x = ~Date, y = ~Value, color = ~Variable, type = "scatter", mode = "lines") %>%
+  layout(title = "Original Data and Forecasts",
+         xaxis = list(title = "Date",
+                      rangeslider = list(visible = T)),
+         yaxis = list(title = "Values"),
+         shapes = list(list(type = "line",
+                            x0 = original_data_end,
+                            x1 = original_data_end,
+                            y0 = min(combined_data_long$Value),
+                            y1 = max(combined_data_long$Value),
+                            yref = "y",
+                            xref = "x",
+                            line = list(color = "red", dash = "dash"))),
+         annotations = list(list(x = original_data_end,
+                                 y = max(combined_data_long$Value),
+                                 xref = "x",
+                                 yref = "y",
+                                 text = "Forecast",
+                                 showarrow = F,
+                                 ax = 0,
+                                 ay = -15,
+                                 font = list(size = 12, color = "red"))))
+
+# Show the plot
+p
+
+```
+
+
+### Finding conclusion
+
+From the VAR estimation results, you can make several observations about the relationships between the endogenous variables (Breadth, XLF, XLK, X.VIX, and SPY) and their lagged values:
+
+- Breadth: The lagged value of Breadth (Breadth.l1) is highly significant (p-value < 0.001), indicating a strong positive relationship with the current value of Breadth.
+
+- XLF: The lagged value of XLF (XLF.l1) is highly significant (p-value < 0.001), indicating a strong positive relationship with the current value of XLF.
+
+- XLK: The lagged value of XLK (XLK.l1) is highly significant (p-value < 0.001), indicating a strong positive relationship with the current value of XLK.
+
+- X.VIX: The lagged value of X.VIX (X.VIX.l1) is highly significant (p-value < 0.001), indicating a strong positive relationship with the current value of X.VIX.
+
+- SPY: The lagged value of SPY (SPY.l1) is highly significant (p-value < 0.001), indicating a strong positive relationship with the current value of SPY.
+
+Overall, the model suggests that the lagged values of the endogenous variables are important predictors of their current values. However, not all the coefficients for other variables in each equation are significant. For example, the lagged value of XLF in the Breadth equation is not significant (p-value = 0.2313), which suggests that the lagged value of XLF does not have a strong relationship with the current value of Breadth.
+
+Additionally, the adjusted R-squared values for all the equations are relatively high, which indicates that the model explains a large proportion of the variation in the data. The highest adjusted R-squared value is for the XLF equation (0.9929), while the lowest is for the Breadth equation (0.8234).
+
+The residuals' covariance and correlation matrices show that the residuals are correlated across equations. This correlation indicates that there might be some underlying common factors that affect all the endogenous variables.
+
+In conclusion, the VAR model provides insights into the relationships between the selected endogenous variables and their lagged values. It is essential to take into account these relationships when making forecasts or interpreting the results. However, it's important to note that the VAR model is a linear model, and there could be nonlinear relationships or other factors not captured by the model. Moreover, it would be useful to validate the model's performance with out-of-sample data and consider alternative modeling approaches if necessary.
+

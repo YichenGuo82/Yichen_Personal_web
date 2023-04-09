@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.247">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ARMA/ARIMA/SARIMA MODEL</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="ARIMA_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ARIMA_files/libs/quarto-html/quarto.js"></script>
+<script src="ARIMA_files/libs/quarto-html/popper.min.js"></script>
+<script src="ARIMA_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ARIMA_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ARIMA_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ARIMA_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ARIMA_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ARIMA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ARIMA_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#arima-models" id="toc-arima-models" class="nav-link active" data-scroll-target="#arima-models">ARIMA Models</a>
+  <ul class="collapse">
+  <li><a href="#check-for-stationarity" id="toc-check-for-stationarity" class="nav-link" data-scroll-target="#check-for-stationarity">Check for stationarity</a></li>
+  <li><a href="#model-fitting-arma" id="toc-model-fitting-arma" class="nav-link" data-scroll-target="#model-fitting-arma">Model FItting (ARMA)</a></li>
+  <li><a href="#model-diagonsis" id="toc-model-diagonsis" class="nav-link" data-scroll-target="#model-diagonsis">Model Diagonsis</a></li>
+  <li><a href="#compare-with-auto.arima" id="toc-compare-with-auto.arima" class="nav-link" data-scroll-target="#compare-with-auto.arima">Compare with Auto.ARima()</a></li>
+  <li><a href="#arima-model-forecast" id="toc-arima-model-forecast" class="nav-link" data-scroll-target="#arima-model-forecast">ARIMA model forecast</a></li>
+  <li><a href="#compare-with-benchmark" id="toc-compare-with-benchmark" class="nav-link" data-scroll-target="#compare-with-benchmark">Compare with benchmark</a></li>
+  </ul></li>
+  <li><a href="#sarima" id="toc-sarima" class="nav-link" data-scroll-target="#sarima">SARIMA</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ARMA/ARIMA/SARIMA MODEL</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<p>During the Exploratory Data Analysis session, through ACF and Augmented Dickey-Fuller Test we are able to find that the market breadth data is stationary, thus no need for differencing and log transformed at first time.</p>
+<section id="arima-models" class="level2">
+<h2 class="anchored" data-anchor-id="arima-models">ARIMA Models</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>spx_breadth_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"spx_market_breadth.csv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">ymd</span>(Date)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Breadth =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>spx_breadth_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(spx_breadth_data<span class="sc">$</span>Breadth, <span class="at">start =</span><span class="fu">decimal_date</span>(<span class="fu">as.Date</span>(<span class="st">"2020-04-07"</span>, <span class="at">format=</span><span class="st">"%Y-%m-%d"</span>)), <span class="at">frequency =</span> <span class="fl">365.25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="check-for-stationarity" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-stationarity">Check for stationarity</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(gridExtra)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>plot5 <span class="ot">=</span> <span class="fu">ggAcf</span>(spx_breadth_ts)<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="st">"ACF of the Market Breadth"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>plot6 <span class="ot">=</span> <span class="fu">ggPacf</span>(spx_breadth_ts)<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="st">"PACF of the Market Breadth"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot5, plot6,<span class="at">nrow=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform ADF test</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(spx_breadth_ts)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the results</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  spx_breadth_ts
+Dickey-Fuller = -6.8663, Lag order = 9, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+</div>
+</div>
+<p>Again, both the ACF plot and the Augmented Dickey-Fuller test shows that the market breadth data is stationary, thus no further differencing needed. Since we didn’t differenced the data, we will be using ARMA model, and from the plot we could clearly see that p=1 and q=0, observed from the AR and MA model</p>
+</section>
+<section id="model-fitting-arma" class="level3">
+<h3 class="anchored" data-anchor-id="model-fitting-arma">Model FItting (ARMA)</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the ARIMA results list</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ARMA_res <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a counter</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop over AR (p) values</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop over MA (q) values</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) {</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Fit the ARIMA model</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      ARMA_res[[cc]] <span class="ot">&lt;-</span> <span class="fu">arima</span>(<span class="at">x =</span> spx_breadth_ts, <span class="at">order =</span> <span class="fu">c</span>(p, <span class="dv">0</span>, q))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Increment the counter</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Get AIC and BIC values for model evaluation</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>ARMA_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(ARMA_res, <span class="cf">function</span>(x) x<span class="sc">$</span>aic)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>ARMA_BIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(ARMA_res, <span class="cf">function</span>(x) x<span class="sc">$</span>bic)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the index of the minimum AIC value</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>best_model <span class="ot">&lt;-</span> ARMA_res[[<span class="fu">which</span>(ARMA_AIC <span class="sc">==</span> <span class="fu">min</span>(ARMA_AIC))]]</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the best model</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(best_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+arima(x = spx_breadth_ts, order = c(p, 0, q))
+
+Coefficients:
+         ar1      ar2      ar3      ma1  intercept
+      1.8353  -0.7963  -0.0497  -0.9447   600.5391
+s.e.  0.0438   0.0762   0.0374   0.0250    20.9535
+
+sigma^2 estimated as 12081:  log likelihood = -4626.66,  aic = 9265.32</code></pre>
+</div>
+</div>
+<p>Breadth(t) = 600.5391 + 1.8353 * Breadth(t-1) - 0.7963 * Breadth(t-2) - 0.0497 * Breadth(t-3) - 0.9447 * ε(t-1) + ε(t)</p>
+</section>
+<section id="model-diagonsis" class="level3">
+<h3 class="anchored" data-anchor-id="model-diagonsis">Model Diagonsis</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the ARIMA(3, 0, 1) model</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>best_model <span class="ot">&lt;-</span> <span class="fu">Arima</span>(spx_breadth_ts, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual diagnostics</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(best_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from ARIMA(3,0,1) with non-zero mean
+Q* = 129.38, df = 147, p-value = 0.8491
+
+Model df: 4.   Total lags used: 151</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Additional residual plots</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of residuals</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(best_model<span class="sc">$</span>residuals, <span class="at">breaks =</span> <span class="dv">20</span>, <span class="at">main =</span> <span class="st">"Histogram of Residuals"</span>, <span class="at">xlab =</span> <span class="st">"Residuals"</span>, <span class="at">col =</span> <span class="st">"lightblue"</span>, <span class="at">border =</span> <span class="st">"black"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Kernel density plot of residuals</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(best_model<span class="sc">$</span>residuals), <span class="at">main =</span> <span class="st">"Kernel Density Plot of Residuals"</span>, <span class="at">xlab =</span> <span class="st">"Residuals"</span>, <span class="at">ylab =</span> <span class="st">"Density"</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rug</span>(best_model<span class="sc">$</span>residuals, <span class="at">col =</span> <span class="st">"black"</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q plot of residuals</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(best_model<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="st">"Q-Q Plot of Residuals"</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(best_model<span class="sc">$</span>residuals, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatter plot of residuals vs. fitted values</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(best_model), best_model<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="st">"Residuals vs. Fitted Values"</span>, <span class="at">xlab =</span> <span class="st">"Fitted Values"</span>, <span class="at">ylab =</span> <span class="st">"Residuals"</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">pch =</span> <span class="dv">20</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>By checking the residual of the model ARIMA(3,0,1) we can see that the model did a good job of capturing the residual and the movement of the dataset as the distribution of the residual is normally distributed and most of the residuals follows the q-q plot.</p>
+</section>
+<section id="compare-with-auto.arima" class="level3">
+<h3 class="anchored" data-anchor-id="compare-with-auto.arima">Compare with Auto.ARima()</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auto.arima</span>(spx_breadth_ts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: spx_breadth_ts 
+ARIMA(1,0,0) with non-zero mean 
+
+Coefficients:
+         ar1      mean
+      0.9101  591.6137
+s.e.  0.0152   44.2257
+
+sigma^2 = 12305:  log likelihood = -4632.51
+AIC=9271.02   AICc=9271.05   BIC=9284.9</code></pre>
+</div>
+</div>
+<p>The result of the auto arima is different from the model I choose, which I believe there could be several cause of this:</p>
+<ul>
+<li><p>Different criteria: While I used the AIC value to select the best ARIMA model in your manual search, auto.arima also considers AICc (corrected AIC) and BIC (Bayesian Information Criterion) values in its model selection process. These criteria may lead to different model selections.</p></li>
+<li><p>Stepwise procedure: The auto.arima function uses a stepwise search algorithm to find the best model, which starts with a simple model and adds or removes terms based on the AIC value. This stepwise approach is computationally efficient, but it may not explore all possible combinations of p, d, and q, and thus might not find the same model as my manual search.</p></li>
+</ul>
+</section>
+<section id="arima-model-forecast" class="level3">
+<h3 class="anchored" data-anchor-id="arima-model-forecast">ARIMA model forecast</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(best_model,<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Point Forecast    Lo 80     Hi 80    Lo 95    Hi 95
+2022.3348       850.0667 708.7395  991.3939 633.9254 1066.208
+2022.3376       844.7766 655.5244 1034.0288 555.3404 1134.213
+2022.3403       837.5736 614.3001 1060.8470 496.1062 1179.041
+2022.3431       828.6691 579.6969 1077.6414 447.8989 1209.439
+2022.3458       818.3257 549.4260 1087.2254 407.0791 1229.572
+2022.3485       806.7914 522.3208 1091.2619 371.7312 1241.852
+2022.3513       794.3017 497.6918 1090.9116 340.6760 1247.927
+2022.3540       781.0788 475.0914 1087.0663 313.1114 1249.046
+2022.3567       767.3301 454.2068 1080.4533 288.4494 1246.211
+2022.3595       753.2477 434.8075 1071.6879 266.2354 1240.260</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(best_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see the model was able to provide a good forecast for months but not good enough for later changes.</p>
+</section>
+<section id="compare-with-benchmark" class="level3">
+<h3 class="anchored" data-anchor-id="compare-with-benchmark">Compare with benchmark</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(best_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     ME     RMSE      MAE  MPE MAPE      MASE         ACF1
+Training set -0.2061896 109.9129 82.16254 -Inf  Inf 0.2886379 -0.002412457</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>bench_fit <span class="ot">&lt;-</span> <span class="fu">snaive</span>(spx_breadth_ts, <span class="at">h=</span><span class="dv">24</span>) </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(bench_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    ME     RMSE      MAE       MPE     MAPE     MASE      ACF1
+Training set -66.77762 359.1479 290.0464 -145.9626 179.2656 1.018936 0.8979772</code></pre>
+</div>
+</div>
+<p>By comparing the RMSE, my manual model clearly outperform the benchmark naive model.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(spx_breadth_ts) <span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">meanf</span>(spx_breadth_ts, <span class="at">h=</span><span class="dv">11</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">series=</span><span class="st">"Mean"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">naive</span>(spx_breadth_ts, <span class="at">h=</span><span class="dv">11</span>),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">series=</span><span class="st">"Naïve"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">autolayer</span>(<span class="fu">forecast</span>(best_model, <span class="at">h=</span><span class="dv">11</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">series=</span><span class="st">"FInal ARIMA model"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Forecasts for SPX market breadth"</span>) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Market Breadth"</span>) <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>By visualizting the forecast, it is also clear that the model has outperform the benchmark models.</p>
+</section>
+</section>
+<section id="sarima" class="level2">
+<h2 class="anchored" data-anchor-id="sarima">SARIMA</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">decompose</span>(spx_breadth_ts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>By decomposing the market breadth time series, I can’t observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

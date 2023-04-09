@@ -1,5 +1,5 @@
 ---
-title: "ARMA/ARIMA MODEL"
+title: "ARMA/ARIMA/SARIMA MODEL"
 format:
   html:
     code-fold: true
@@ -29,121 +29,149 @@ library(plotly)
 library(ggplot2)
 ```
 
+During the Exploratory Data Analysis session, through ACF and Augmented Dickey-Fuller Test we are able to find that the market breadth data is stationary, thus no need for differencing and log transformed at first time. 
 
-## SPY Time Series Plot
+## ARIMA Models
 
-```{r}
-spy <- getSymbols("SPY",auto.assign = FALSE, from = "2017-10-01",src="yahoo") 
-spy=data.frame(spy)
-spy <- data.frame(spy,rownames(spy))
+```{r,warning=FALSE,message=FALSE}
+spx_breadth_data <- read_csv("spx_market_breadth.csv") %>%
+  mutate(Date = ymd(Date)) %>%
+  rename(Breadth = `0`)
 
-colnames(spy)[7] = "date"
-
-spy$date<-as.Date(spy$date,"%Y-%m-%d")
-
-plot_ly(spy, x = ~date, y = ~SPY.Adjusted, type = "scatter", mode = "lines") %>%
-  layout(title = "SPY Adjusted Price Time Series", yaxis = list(title = "SPY Price"))
-
-ts_adjusted <- as.ts(spy[,"SPY.Adjusted"], frequency = 1)
+spx_breadth_ts <- ts(spx_breadth_data$Breadth, start =decimal_date(as.Date("2020-04-07", format="%Y-%m-%d")), frequency = 365.25)
 ```
 
-- Trend: There appears to be an overall upward trend in the price of SPY over the period from October 2017 to February 2023.
-- Seasonality: There does not appear to be a clear seasonal pattern in the data.
-- Variation: There is significant variation in the price of SPY over the period, with some periods of rapid growth and some periods of decline.
-- Periodic fluctuations: There may be some periodic fluctuations in the data, but they are not clear from this plot. It is possible that a more detailed analysis of the data would reveal periodic fluctuations at different time scales.
+### Check for stationarity
 
-In terms of whether the time series is multiplicative or additive, it's difficult to tell definitively from the plot alone. A common approach to determining whether a time series is multiplicative or additive is to decompose it into its components (trend, seasonality, etc.) 
-
-### Lag plot
-```{r}
-ts_lags(ts_adjusted, lags=1:6)
-```
-
-The lag plot of SPY shown an steady upward trend, suggests the presence of positive autocorrelation in the SPY stock price and it's lagged price. It suggests that past values of the time series **can be used to predict** future values, and that simple models that assume the time series is constant over time may not be appropriate.
-
-### Decompose of the SPY time series plot (Not Applicable)
-
-```{r}
-# Decompose the time series
-try({decomp <- decompose(ts_adjusted)})
-```
-
-From the code we have learn that this dataset has **no periods**, it means that there is no clear and consistent repeating pattern in the data. Thus the traditional decompose() or stl() dosn't work on the dataset.
-
-In general, stock prices are considered to be non-periodic because they do not exhibit a clear and consistent repeating pattern over time with a fixed period. The fluctuations in stock prices are influenced by a complex and ever-changing set of factors, such as company performance, economic indicators, geopolitical events, and investor sentiment, among others. These factors can cause stock prices to rise or fall in unpredictable ways that are difficult to forecast.
-
-### ACF and PACF on the original time series
-```{r}
+```{r,message=FALSE,warning=FALSE}
 require(gridExtra)
 
-plot5 = ggAcf(ts_adjusted)+ggtitle("ACF of SPY Adjusted Close Price")
-plot6 = ggPacf(ts_adjusted)+ggtitle("PACF of SPY Adjusted Close Price")
+plot5 = ggAcf(spx_breadth_ts)+ggtitle("ACF of the Market Breadth")
+plot6 = ggPacf(spx_breadth_ts)+ggtitle("PACF of the Market Breadth")
 grid.arrange(plot5, plot6,nrow=2)
-```
 
-The ACF shows a slow decay in correlation, it suggests that the original series is **non-stationary** and that there may be a trend or seasonality present.  A spike at lag 1 in the PACF suggests that the correlation between the observations separated by k time steps is significant, and that the first lag may be a good candidate for an autoregressive (AR) term in a time series model.
-
-In order to make the dataset stationary for the future analysis, there will be two potential ways, detrending and differencing. 
-
-### Augmented Dickey-Fuller Test
-```{r}
 # Perform ADF test
-adf_test <- adf.test(ts_adjusted)
+adf_test <- adf.test(spx_breadth_ts)
 
 # Print the results
 print(adf_test)
+
+```
+Again, both the ACF plot and the Augmented Dickey-Fuller test shows that the market breadth data is stationary, thus no further differencing needed. Since we didn't differenced the data, we will be using ARMA model, and from the plot we could clearly see that p=1 and q=0, observed from the AR and MA model 
+
+### Model FItting (ARMA)
+```{r}
+# Initialize the ARIMA results list
+ARMA_res <- list()
+
+# Set a counter
+cc <- 1
+
+# Loop over AR (p) values
+for (p in 1:3) {
+  # Loop over MA (q) values
+  for (q in 0:1) {
+      # Fit the ARIMA model
+      ARMA_res[[cc]] <- arima(x = spx_breadth_ts, order = c(p, 0, q))
+      
+      # Increment the counter
+      cc <- cc + 1
+  }
+}
+
+# Get AIC and BIC values for model evaluation
+ARMA_AIC <- sapply(ARMA_res, function(x) x$aic)
+ARMA_BIC <- sapply(ARMA_res, function(x) x$bic)
+
+# Find the index of the minimum AIC value
+best_model <- ARMA_res[[which(ARMA_AIC == min(ARMA_AIC))]]
+
+# Print the best model
+print(best_model)
+```
+Breadth(t) = 600.5391 + 1.8353 * Breadth(t-1) - 0.7963 * Breadth(t-2) - 0.0497 * Breadth(t-3) - 0.9447 * ε(t-1) + ε(t)
+
+### Model Diagonsis
+
+```{r}
+# Fit the ARIMA(3, 0, 1) model
+best_model <- Arima(spx_breadth_ts, order = c(3, 0, 1))
+
+# Residual diagnostics
+checkresiduals(best_model)
+
+# Additional residual plots
+par(mfrow = c(2, 2))
+
+# Histogram of residuals
+hist(best_model$residuals, breaks = 20, main = "Histogram of Residuals", xlab = "Residuals", col = "lightblue", border = "black")
+
+# Kernel density plot of residuals
+plot(density(best_model$residuals), main = "Kernel Density Plot of Residuals", xlab = "Residuals", ylab = "Density", col = "blue")
+rug(best_model$residuals, col = "black")
+
+# Q-Q plot of residuals
+qqnorm(best_model$residuals, main = "Q-Q Plot of Residuals", col = "blue")
+qqline(best_model$residuals, col = "red", lwd = 2)
+
+# Scatter plot of residuals vs. fitted values
+plot(fitted(best_model), best_model$residuals, main = "Residuals vs. Fitted Values", xlab = "Fitted Values", ylab = "Residuals", col = "blue", pch = 20)
+abline(h = 0, col = "red", lwd = 2)
+
+par(mfrow = c(1, 1))
+```
+By checking the residual of the model ARIMA(3,0,1) we can see that the model did a good job of capturing the residual and the movement of the dataset as the distribution of the residual is normally distributed and most of the residuals follows the q-q plot. 
+
+### Compare with Auto.ARima()
+```{r}
+auto.arima(spx_breadth_ts)
+```
+The result of the auto arima is different from the model I choose, which I believe there could be several cause of this:
+
+- Different criteria: While I used the AIC value to select the best ARIMA model in your manual search, auto.arima also considers AICc (corrected AIC) and BIC (Bayesian Information Criterion) values in its model selection process. These criteria may lead to different model selections.
+
+- Stepwise procedure: The auto.arima function uses a stepwise search algorithm to find the best model, which starts with a simple model and adds or removes terms based on the AIC value. This stepwise approach is computationally efficient, but it may not explore all possible combinations of p, d, and q, and thus might not find the same model as my manual search.
+
+
+### ARIMA model forecast
+```{r}
+forecast(best_model,10)
 ```
 
-Since the p-value is less than 0.05 (assuming a 95% confidence level), then we can reject the null hypothesis that the time series is non-stationary, and conclude that the time series is stationary, which is different from my finding in the ACF plot. It is possible that there is some other factor that is affecting the results. It is also possible that the sample size is too small or the data is too noisy to draw reliable conclusions.
 
-## Detrending and Differencing
-```{r,message=FALSE, warning=FALSE}
-
-
-fit = lm(ts_adjusted~time(ts_adjusted), na.action=NULL) 
-# regress stock price on time
-# time creates the vector of times at which a time series was sampled.
-
-plot1<-autoplot(resid(fit), main="Detrended") 
-plot2<-autoplot(diff(ts_adjusted), main="First Differences") 
-
-grid.arrange(plot1, plot2,nrow=2)
+```{r}
+autoplot(forecast(best_model))
 ```
+We can see the model was able to provide a good forecast for months but not good enough for later changes.
 
-From the graph we can see that detrending (the residuals of the linear regression model fit to the time series) the time series doesn't remove the  patterns or trends in the residuals, indicating the linear model is not a good fit for the data. 
+### Compare with benchmark
 
-However, differencing (the change in value from one time period to the next) successfully make the distributed around zero, which means that there is no systematic increase or decrease in the values of the time series from one time period to the next. In other words, the difference between consecutive observations in the time series is centered around zero, indicating the first order differences of SPY is **stationary**.
+```{r, warning=FALSE}
+accuracy(best_model)
 
-### ACF and PACF plot on First Differences
-
-```{r,message=FALSE, warning=FALSE}
-plot3 <- ggAcf(diff(ts_adjusted))+ggtitle("ACF of First Differences of SPY Adjusted Close Price")
-plot4 <- ggPacf(diff(ts_adjusted))+ggtitle("PACF of First Differences of SPY Adjusted Close Price")
-
-grid.arrange(plot3, plot4,nrow=2)
+bench_fit <- snaive(spx_breadth_ts, h=24) 
+accuracy(bench_fit)
 ```
+By comparing the RMSE, my manual model clearly outperform the benchmark naive model.
 
-Now the acf plot incidate the first difference of SPY adjusted close price is stationary and we could utilized it for further analysis such as the ARIMA modeling. 
-
-## Linear regression on the fit the SPY dataset
-
-```{r,message=FALSE, warning=FALSE}
-library(knitr)
-summary_table = summary(fit)$coefficients
-# Extract the coefficient table from the summary
-
-kable(summary_table, caption = "Regression Results", align = "c")
+```{r}
+autoplot(spx_breadth_ts) +
+  autolayer(meanf(spx_breadth_ts, h=11),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(spx_breadth_ts, h=11),
+            series="Naïve", PI=FALSE) +
+    autolayer(forecast(best_model, h=11),
+            series="FInal ARIMA model", PI=FALSE) +
+  ggtitle("Forecasts for SPX market breadth") +
+  xlab("Year") + ylab("Market Breadth") +
+  guides(colour=guide_legend(title="Forecast"))
 ```
+By visualizting the forecast, it is also clear that the model has outperform the benchmark models. 
 
-```{r, message=FALSE, warning= FALSE}
-y=ts_adjusted
-x=time(ts_adjusted)
-DD<-data.frame(x,y)
-ggp <- ggplot(DD, aes(x, y)) +           
-  geom_line()
+## SARIMA
 
-ggp +                                     
-  stat_smooth(method = "lm",
-              formula = y ~ x,
-              geom = "smooth") +ggtitle("The adjusted SPY closed price")+ylab("Price(USD)")
+```{r}
+autoplot(decompose(spx_breadth_ts))
 ```
+By decomposing the market breadth time series, I can't observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements.
+

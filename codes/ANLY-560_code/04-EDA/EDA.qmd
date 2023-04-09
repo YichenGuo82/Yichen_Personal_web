@@ -152,13 +152,22 @@ In order to make the dataset stationary for the future analysis, there will be t
 ### Augmented Dickey-Fuller Test
 ```{r}
 # Perform ADF test
+adf_test <- adf.test(spx_breadth_ts)
+
+# Print the results
+print(adf_test)
+```
+Since the p-value is less than 0.05 (assuming a 95% confidence level), then we can reject the null hypothesis that the time series is non-stationary, and conclude that the time series is stationary.
+
+```{r}
+# Perform ADF test
 adf_test <- adf.test(ts_adjusted)
 
 # Print the results
 print(adf_test)
 ```
+Since the p-value is bigger than 0.05 (assuming a 95% confidence level), then we can reject the null hypothesis that the time series is non-stationary, and conclude that the time series is not stationary, which is same as my finding in the ACF plot. It is possible that there is some other factor that is affecting the results. It is also possible that the sample size is too small or the data is too noisy to draw reliable conclusions.
 
-Since the p-value is less than 0.05 (assuming a 95% confidence level), then we can reject the null hypothesis that the time series is non-stationary, and conclude that the time series is stationary, which is different from my finding in the ACF plot. It is possible that there is some other factor that is affecting the results. It is also possible that the sample size is too small or the data is too noisy to draw reliable conclusions.
 
 ## Detrending and Differencing
 ```{r,message=FALSE, warning=FALSE}
