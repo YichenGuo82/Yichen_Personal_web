@@ -1,0 +1,251 @@
+---
+title: "ARCH/GARCH"
+format:
+  html:
+    code-fold: true
+    theme: custom.scss
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+      df_print: paged
+---
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+library(flipbookr)
+library(tidyverse)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(dplyr)
+library(zoo)
+library(pracma)
+library(lubridate)
+library(rugarch)
+library(vars)
+library(fGarch)
+```
+
+## Introduction on Return and Volatility
+
+- Return: A return is the change in price of an asset, investment, or project over time, which may be represented in terms of price change or percentage change. A positive return represents a profit while a negative return marks a loss.
+
+- Volatility: Volatility is a statistical measure of the dispersion of returns for a given security. Volatility is often measured as either the standard devidation or variance between returns from that same security or market index. Volatility is an important factor in options trading. Here volatility means the conditional standard deviation of the underlying asset return.
+
+Here we will be modeling  and **forecast the volatility of future returns** on SPY and plot it with the market breadth data; modeling the volatility of an asset return. The models are referred to as **conditional heteroscedastic models**.
+
+## SPY return and market breadth visualization
+```{r,warning=FALSE,message=FALSE}
+spy <- getSymbols("SPY",auto.assign = FALSE, from = "2020-04-07", to = "2023-04-06",src="yahoo")
+spy=data.frame(spy)
+spy <- data.frame(spy,rownames(spy))
+
+colnames(spy)[7] = "date"
+spy$date<-as.Date(spy$date,"%Y-%m-%d")
+spx_breadth_data <- read_csv("spx_market_breadth.csv") %>%
+  mutate(Date = ymd(Date)) %>%
+  rename(Breadth = `0`)
+
+spy_breadth <- spx_breadth_data %>%
+  dplyr::full_join(spy, by = c("Date" = "date"))
+```
+
+
+```{r,warning=FALSE,message=FALSE}
+# Create the plot
+fig <- plot_ly() %>%
+  add_trace(
+    data = spy_breadth,
+    x = ~Date,
+    y = ~SPY.Adjusted,
+    type = "scatter",
+    mode = "lines",
+    name = "SPY Adjusted",
+    line = list(color = "#1a99c7"),
+    yaxis = "y1"
+  ) %>%
+  add_trace(
+    data = spy_breadth,
+    x = ~Date,
+    y = ~Breadth,
+    type = "scatter",
+    mode = "lines",
+    name = "Breadth",
+    line = list(color = "#fcba03"),
+    yaxis = "y2"
+  ) %>%
+  layout(
+    title = "SPY and Breadth",
+    yaxis = list(
+      title = "SPY Adjusted",
+      side = "left",
+      showgrid = FALSE
+    ),
+    yaxis2 = list(
+      title = "Breadth",
+      side = "right",
+      overlaying = "y",
+      showgrid = FALSE
+    ),
+    xaxis = list(
+      title = "Date"
+    )
+  )
+
+# Display the plot
+fig
+```
+
+```{r,warning=FALSE,message=FALSE}
+spy_ts = ts(spy_breadth$`SPY.Adjusted`, start=decimal_date(as.Date("2020-04-06")), frequency = 365.25)
+
+####### calculating Returns
+returns = log(spy_ts) %>% diff()
+autoplot(returns) +ggtitle("SPY Returns Since 2020-04-06")
+```
+## Model comparision
+
+### Checking for stationary
+
+```{r,warning=FALSE,message=FALSE}
+require(gridExtra)
+p1 = ggAcf(returns,40)+ggtitle("ACF of the SPY return")
+p2 = ggPacf(returns,40)+ggtitle("PACF of the SPY return")
+
+grid.arrange(p1,p2, nrow=2)
+```
+From the ACF plot we can claim that the return of SPY is weakly stationary.
+
+### Check for correlations
+```{r,warning=FALSE,message=FALSE}
+
+p3 = ggAcf(abs(returns),40)
+p4 = ggAcf(returns^2,40)
+
+grid.arrange(p3,p4, nrow=2)
+```
+We can see clear correlation in both plots. This correlation may indicate the presence of two types of dependencies in the time series data:
+
+- **Volatility clustering**: A significant correlation in the ACF plot of the absolute returns suggests that there is some dependency in the magnitude of returns over time. In other words, large returns (either positive or negative) tend to be followed by more large returns, while small returns tend to be followed by more small returns. This phenomenon is known as volatility clustering and is a common feature in financial time series data.
+
+- **Autoregressive conditional heteroskedasticity (ARCH)** effects: A significant correlation in the ACF plot of the squared returns indicates that there is some dependency in the squared returns over time. This suggests the presence of ARCH effects, meaning that the conditional variance of the returns changes over time, with periods of high volatility followed by periods of low volatility and vice versa. ARCH effects can be modeled using an ARCH or GARCH model, which can help improve the accuracy of forecasts.
+
+
+## Garch Model Fitting
+
+### Arch Test
+We can check for ARCH effects by using the ArchTest() function from the FinTS package. We will use a significance level of $\alpha$=0.05
+for our null hypothesis test.
+ 
+```{r,message=FALSE}
+library(FinTS)
+ArchTest(returns, lags=1, demean=TRUE)
+```
+
+Because the p-value is >0.05, we can't reject the null hypothesis and conclude there are **no presence** of ARCH(1) effects.
+ 
+### Fitting an ARIMA model
+
+```{r}
+spy_returns = log(spy_ts)
+auto.arima(spy_returns)
+```
+Thus the p,q value will be use are (3,2).
+
+### Fitting a Garch model
+
+```{r}
+arima.fit<-Arima(spy_returns,order=c(3,2,0))
+arima.res<-arima.fit$residuals
+arima.res <- na.omit(arima.res)
+
+acf(arima.res^2)
+pacf(arima.res^2)
+
+```
+```{r,warning=FALSE}
+model <- list() ## set counter
+cc <- 1
+for (p in 1:7) {
+  for (q in 1:7) {
+  
+    model[[cc]] <- garch(arima.res, order=c(p, q), trace=F)
+    cc <- cc + 1
+  }
+} 
+
+## get AIC values for model evaluation
+GARCH_AIC <- sapply(model, AIC) ## model with lowest AIC is the best
+best_model_index <- which(GARCH_AIC == min(GARCH_AIC))
+best_model <- model[[best_model_index]]
+
+p <- (best_model_index - 1) %% 7 + 1
+q <- floor((best_model_index - 1) / 7) + 1
+
+cat("Best model:", "GARCH(", p, ",", q, ")\n", sep="")
+
+```
+
+```{r}
+summary(final.fit <- garchFit(~garch(1,1), arima.res, trace = F))
+```
+
+## Prediction and correlation
+```{r}
+garch_predict= predict(final.fit, n.ahead = 100, plot = TRUE)
+```
+
+```{r}
+ht <- final.fit@h.t #a numeric vector with the conditional variances (h.t = sigma.t^delta)
+# Prepare the data
+data <- data.frame(ht = ht, Date = spy_breadth$Date[-1], Breadth = spy_breadth$Breadth[-1])
+
+# Normalize the ht and Breadth series
+data$ht_normalized <- (data$ht - min(data$ht)) / (max(data$ht) - min(data$ht))
+data$Breadth_normalized <- (data$Breadth - min(data$Breadth)) / (max(data$Breadth) - min(data$Breadth))
+
+# Create the plotly plot
+fig <- plot_ly() %>%
+  add_lines(data = data, x = ~Date, y = ~ht_normalized, name = "Conditional Variance (Volatality)", line = list(color = "#d64a27")) %>%
+  add_lines(data = data, x = ~Date, y = ~Breadth_normalized, name = "Market Breadth", line = list(color = "#fcba03")) %>%
+  layout(
+    title = "Normalized Conditional Variance and Market Breadth",
+    xaxis = list(
+      title = "Date",
+      rangeslider = list(visible = T)),
+    yaxis = list(title = "Normalized Value")
+  )
+
+# Display the plot
+fig
+```
+
+By plotting the the volatatlity and the market breadth measurement together, it is clear that there are some correlation between the two. When the volatality of the market increase, the market breadth is often meet a spike. 
+
+### Model equation and discussion
+$$
+r_t = -3.0445 \times 10^{-4} + \epsilon_t
+$$
+$$
+\sigma_t^2 = 7.3251 \times 10^{-6} + 1.7224 \times 10^{-1} \epsilon_{t-1}^2 + 8.0119 \times 10^{-1} \sigma_{t-1}^2
+$$
+
+From the fitted GARCH(1,1) model, we can draw several useful insights and observations:
+
+-Persistence of volatility: The estimated coefficients $\alpha_1$ and $\beta_1$ are 0.17224 and 0.80119, respectively. The sum of these coefficients is 0.97343, which is close to 1. This indicates a high degree of persistence in volatility, meaning that large changes in returns are likely to be followed by large changes, and small changes are likely to be followed by small changes. This persistence suggests that the volatility in the SPY returns has a strong memory, and past shocks continue to affect future volatility for some time.
+
+-Significance of GARCH terms: Both the $\alpha_1$ and $\beta_1$ coefficients are statistically significant, as indicated by their p-values (0.000258 and < 2e-16, respectively). This implies that both past shocks ($\epsilon_{t-1}^2$) and past volatility ($\sigma_{t-1}^2$) play a significant role in determining current volatility. In other words, the GARCH(1,1) model is suitable for capturing the dynamics of the SPY return series.
+
+-Conditional variance and market breadth: When plotting the normalized conditional variance (ht) and the normalized market breadth, we observed that there might be some correlation between the two series' trends. This suggests that the market breadth could be a relevant factor in explaining the volatility of the SPY returns. A more in-depth analysis, such as a Granger causality test or a multivariate GARCH model, could provide further insights into the relationship between market breadth and SPY return volatility.
+
+In conclusion, the GARCH(1,1) model offers valuable insights into the volatility dynamics of the SPY return series. The model demonstrates the persistence of volatility and the significance of GARCH terms in capturing these dynamics. Additionally, the potential correlation between market breadth and SPY volatility suggests that market breadth could play a role in explaining the observed return volatility. Further analysis could help uncover the extent of this relationship and its implications for risk management and trading strategies.
