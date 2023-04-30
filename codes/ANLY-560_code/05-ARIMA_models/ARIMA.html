@@ -9,6 +9,7 @@
 
 <title>ARMA/ARIMA/SARIMA MODEL</title>
 <style>
+.child-top { background-image: url('https://www.georgetown.edu/wp-content/uploads/2019/09/20150324-Campus_0006-2-2000x1125-c--dark-default.jpg');height: 230px;margin: 0%;display: flex;flex-direction: row;justify-content:space-between} 
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -101,6 +102,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </head>
 
 <body>
+  <div class="child-top">  
+    <div class = subtitle>
+      <p style="font-size:70px ;color:#d6d3c9;padding-left: 100px;padding-top: 30px;border-right: 6px solid #d6d3c9 ;padding-right: 30px;">
+     ARIMA
+      </p>
+  </div>
+
+<div class="last-word" style="padding-right:100px ;padding-top: 30px;">
+    <h1 style="color: #d6d3c9;text-align:right;">
+          ANLY-560 Time Series 
+    </h1>
+    <p style="color:grey;margin-top: -15px;text-align:right;">
+        <a href="../0-Time_index/index.html">Return to the Home page</a>
+    </p>
+    <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
+      &copy; 2023, hosted by GU domain
+     </p>        
+    </div>
+</div>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
@@ -117,7 +137,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#arima-model-forecast" id="toc-arima-model-forecast" class="nav-link" data-scroll-target="#arima-model-forecast">ARIMA model forecast</a></li>
   <li><a href="#compare-with-benchmark" id="toc-compare-with-benchmark" class="nav-link" data-scroll-target="#compare-with-benchmark">Compare with benchmark</a></li>
   </ul></li>
-  <li><a href="#sarima" id="toc-sarima" class="nav-link" data-scroll-target="#sarima">SARIMA</a></li>
+  <li><a href="#sarima" id="toc-sarima" class="nav-link" data-scroll-target="#sarima">SARIMA</a>
+  <ul class="collapse">
+  <li><a href="#check-for-seasonality" id="toc-check-for-seasonality" class="nav-link" data-scroll-target="#check-for-seasonality">Check for Seasonality</a></li>
+  <li><a href="#fit-an-appropriate-arima-model" id="toc-fit-an-appropriate-arima-model" class="nav-link" data-scroll-target="#fit-an-appropriate-arima-model">Fit an appropriate ARIMA model</a></li>
+  <li><a href="#model-forecast-with-cv" id="toc-model-forecast-with-cv" class="nav-link" data-scroll-target="#model-forecast-with-cv">Model forecast with CV</a></li>
+  <li><a href="#model-comparision-with-benchmark" id="toc-model-comparision-with-benchmark" class="nav-link" data-scroll-target="#model-comparision-with-benchmark">Model comparision with benchmark</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -393,6 +419,8 @@ Training set -66.77762 359.1479 290.0464 -145.9626 179.2656 1.018936 0.8979772</
 </section>
 <section id="sarima" class="level2">
 <h2 class="anchored" data-anchor-id="sarima">SARIMA</h2>
+<section id="check-for-seasonality" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-seasonality">Check for Seasonality</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -402,7 +430,352 @@ Training set -66.77762 359.1479 290.0464 -145.9626 179.2656 1.018936 0.8979772</
 <p><img src="ARIMA_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>By decomposing the market breadth time series, I can’t observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements.</p>
+<p>By decomposing the market breadth time series, I can’t observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements. However we can still trying to fit the SARIMA model to the market breadth to see if there exist any correlation there.</p>
+</section>
+<section id="fit-an-appropriate-arima-model" class="level3">
+<h3 class="anchored" data-anchor-id="fit-an-appropriate-arima-model">Fit an appropriate ARIMA model</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>spx_breadth_ts <span class="sc">%&gt;%</span> <span class="fu">diff</span>() <span class="sc">%&gt;%</span> <span class="fu">ggtsdisplay</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From this we can see that there’s no need for a second order differencing. And ACF plot suggest q=1,3 and PACF plot suggest p=1,3,4, which d=1.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>d<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>i<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">6</span><span class="sc">*</span><span class="dv">12</span>),<span class="at">nrow=</span><span class="dv">12</span>) <span class="co"># roughly nrow = 3x2x2</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>)<span class="co"># p=1,2,3 : 3</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(q <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>)<span class="co"># q=1,3,4 :2</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="co"># d=1,2 :2</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(p<span class="dv">-1</span><span class="sc">+</span>d<span class="sc">+</span>q<span class="dv">-1</span><span class="sc">&lt;=</span><span class="dv">8</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>        model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(spx_breadth_ts,<span class="at">order=</span><span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>),<span class="at">include.drift=</span><span class="cn">TRUE</span>) </span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>        ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>        i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print(i)</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a><span class="co">#temp</span></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">d</th>
+<th style="text-align: right;">q</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">BIC</th>
+<th style="text-align: right;">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9289.878</td>
+<td style="text-align: right;">9308.385</td>
+<td style="text-align: right;">9289.931</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9284.062</td>
+<td style="text-align: right;">9297.938</td>
+<td style="text-align: right;">9284.094</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9291.797</td>
+<td style="text-align: right;">9314.930</td>
+<td style="text-align: right;">9291.877</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9285.345</td>
+<td style="text-align: right;">9303.846</td>
+<td style="text-align: right;">9285.398</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9291.809</td>
+<td style="text-align: right;">9314.942</td>
+<td style="text-align: right;">9291.889</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9285.487</td>
+<td style="text-align: right;">9303.989</td>
+<td style="text-align: right;">9285.541</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9293.877</td>
+<td style="text-align: right;">9321.637</td>
+<td style="text-align: right;">9293.989</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9287.197</td>
+<td style="text-align: right;">9310.324</td>
+<td style="text-align: right;">9287.278</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9263.564</td>
+<td style="text-align: right;">9291.324</td>
+<td style="text-align: right;">9263.676</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9286.481</td>
+<td style="text-align: right;">9309.608</td>
+<td style="text-align: right;">9286.562</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9265.420</td>
+<td style="text-align: right;">9297.807</td>
+<td style="text-align: right;">9265.570</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9267.954</td>
+<td style="text-align: right;">9295.707</td>
+<td style="text-align: right;">9268.067</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>AIC),] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q      AIC      BIC     AICc
+9 3 1 1 9263.564 9291.324 9263.676</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>BIC),]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q      AIC      BIC     AICc
+9 3 1 1 9263.564 9291.324 9263.676</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>AICc),]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q      AIC      BIC     AICc
+9 3 1 1 9263.564 9291.324 9263.676</code></pre>
+</div>
+</div>
+<p>Thus the best model is p=3, q=1, and d=1.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="ot">=</span><span class="fu">Arima</span>(spx_breadth_ts,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>fit2<span class="ot">=</span><span class="fu">Arima</span>(spx_breadth_ts,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(spx_breadth_ts, <span class="at">col=</span><span class="st">"lightblue"</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">fitted</span>(fit1),<span class="at">col=</span><span class="st">"darkgreen"</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">fitted</span>(fit2),<span class="at">col=</span><span class="st">"red"</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"spx_market_breadth"</span>, <span class="st">"fit1"</span>,<span class="st">"fit2"</span>), <span class="at">fill =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see that the model 1 doing a pretty good fit that getting from the result.</p>
+</section>
+<section id="model-forecast-with-cv" class="level3">
+<h3 class="anchored" data-anchor-id="model-forecast-with-cv">Model forecast with CV</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: spx_breadth_ts 
+ARIMA(3,1,1) with drift 
+
+Coefficients:
+         ar1     ar2      ar3      ma1    drift
+      0.9067  0.0720  -0.0727  -1.0000  -0.0251
+s.e.  0.0363  0.0489   0.0365   0.0041   0.1901
+
+sigma^2 = 12303:  log likelihood = -4625.78
+AIC=9263.56   AICc=9263.68   BIC=9291.32
+
+Training set error measures:
+                   ME     RMSE      MAE MPE MAPE     MASE        ACF1
+Training set 4.550812 110.4763 81.03106 Inf  Inf 0.284663 -0.00238004</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(fit1,<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Point Forecast    Lo 80     Hi 80    Lo 95    Hi 95
+2022.3348       823.7815 681.5435  966.0194 606.2473 1041.316
+2022.3376       799.7081 607.5853  991.8309 505.8817 1093.535
+2022.3403       777.0914 546.5002 1007.6827 424.4325 1129.750
+2022.3431       756.9116 499.3430 1014.4803 362.9943 1150.829
+2022.3458       738.7348 460.9545 1016.5151 313.9065 1163.563
+2022.3485       722.4437 429.3544 1015.5330 274.2022 1170.685
+2022.3513       707.8291 402.9161 1012.7422 241.5048 1174.153
+2022.3540       694.7249 380.5824 1008.8675 214.2853 1175.164
+2022.3567       682.9736 361.5617 1004.3856 191.4165 1174.531
+2022.3595       672.4359 345.2613  999.6105 172.0655 1172.806</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(fit1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="model-comparision-with-benchmark" class="level3">
+<h3 class="anchored" data-anchor-id="model-comparision-with-benchmark">Model comparision with benchmark</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>train_series <span class="ot">&lt;-</span> <span class="fu">window</span>(spx_breadth_ts, <span class="at">end =</span> <span class="fl">2022.4</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>train_series <span class="sc">%&gt;%</span> <span class="fu">diff</span>() <span class="sc">%&gt;%</span> <span class="fu">ggtsdisplay</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sarimaModel_1<span class="ot">=</span><span class="fu">arima</span>(train_series, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>sarimaModel_2<span class="ot">=</span><span class="fu">arima</span>(train_series, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>forecast1<span class="ot">=</span><span class="fu">predict</span>(sarimaModel_1, <span class="dv">20</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>forecast2<span class="ot">=</span><span class="fu">predict</span>(sarimaModel_2, <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>f1<span class="ot">&lt;-</span><span class="fu">meanf</span>(train_series, <span class="at">h=</span><span class="dv">11</span>) <span class="co">#mean</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(f1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Mean
+Q* = 3833.8, df = 151, p-value &lt; 2.2e-16
+
+Model df: 0.   Total lags used: 151</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>f2<span class="ot">&lt;-</span><span class="fu">naive</span>(train_series, <span class="at">h=</span><span class="dv">11</span>) <span class="co"># naive method</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(f2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from Naive method
+Q* = 142.56, df = 151, p-value = 0.676
+
+Model df: 0.   Total lags used: 151</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(train_series) <span class="sc">+</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">meanf</span>(train_series, <span class="at">h=</span><span class="dv">11</span>),</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">series=</span><span class="st">"Mean"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">naive</span>(train_series, <span class="at">h=</span><span class="dv">11</span>),</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">series=</span><span class="st">"Naïve"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Forecasts for quarterly beer production"</span>) <span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Megalitres"</span>) <span class="sc">+</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-20-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Clearly that my model has outperformed the benchmark model.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(spx_breadth_ts, <span class="at">col=</span><span class="st">"lightblue"</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">fitted</span>(fit1),<span class="at">col=</span><span class="st">"darkgreen"</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>((forecast1<span class="sc">$</span>pred),<span class="at">col=</span><span class="st">'red'</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x =</span> <span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"spx breadth"</span>, <span class="st">"fit1"</span>,<span class="st">"fit2"</span>), <span class="at">fill =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="ARIMA_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 </section>
 
 </main>

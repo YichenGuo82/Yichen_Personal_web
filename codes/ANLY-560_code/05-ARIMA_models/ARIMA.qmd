@@ -170,8 +170,119 @@ By visualizting the forecast, it is also clear that the model has outperform the
 
 ## SARIMA
 
+### Check for Seasonality
+
 ```{r}
 autoplot(decompose(spx_breadth_ts))
 ```
-By decomposing the market breadth time series, I can't observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements.
+By decomposing the market breadth time series, I can't observed significant seasonal effect with in the data, which is normal for the stock market breadth that measure the direction of market movement rather than the overall movements. However we can still trying to fit the SARIMA model to the market breadth to see if there exist any correlation there. 
+
+### Fit an appropriate ARIMA model
+
+```{r}
+spx_breadth_ts %>% diff() %>% ggtsdisplay()
+```
+
+From this we can see that there's no need for a second order differencing. And ACF plot suggest q=1,3 and PACF plot suggest p=1,3,4, which d=1.
+
+```{r, warning=FALSE}
+d=1
+i=1
+temp= data.frame()
+ls=matrix(rep(NA,6*12),nrow=12) # roughly nrow = 3x2x2
+
+
+for (p in 2:4)# p=1,2,3 : 3
+{
+  for(q in 2:3)# q=1,3,4 :2
+  {
+    for(d in 1:2)# d=1,2 :2
+    {
+      
+      if(p-1+d+q-1<=8)
+      {
+        
+        model<- Arima(spx_breadth_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
+        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
+        i=i+1
+        #print(i)
+        
+      }
+      
+    }
+  }
+}
+
+temp= as.data.frame(ls)
+names(temp)= c("p","d","q","AIC","BIC","AICc")
+
+#temp
+knitr::kable(temp)
+```
+```{r}
+temp[which.min(temp$AIC),] 
+temp[which.min(temp$BIC),]
+temp[which.min(temp$AICc),]
+```
+
+Thus the best model is p=3, q=1, and d=1.
+
+```{r,warning=FALSE}
+fit1=Arima(spx_breadth_ts,order=c(3,1,1),include.drift = TRUE)
+fit2=Arima(spx_breadth_ts,order=c(1,1,0),include.drift = TRUE)
+```
+
+
+```{r}
+plot(spx_breadth_ts, col="lightblue")
+lines(fitted(fit1),col="darkgreen")
+lines(fitted(fit2),col="red")
+legend(x = "topleft", legend = c("spx_market_breadth", "fit1","fit2"), fill = 3:1)
+```
+We can see that the model 1 doing a pretty good fit that getting from the result. 
+
+### Model forecast with CV
+
+```{r,warning=FALSE}
+summary(fit1)
+```
+```{r}
+forecast(fit1,10)
+autoplot(forecast(fit1))
+```
+### Model comparision with benchmark
+
+```{r,warning=FALSE}
+train_series <- window(spx_breadth_ts, end = 2022.4)
+
+train_series %>% diff() %>% ggtsdisplay()
+
+sarimaModel_1=arima(train_series, order=c(3,1,1))
+sarimaModel_2=arima(train_series, order=c(1,1,0))
+forecast1=predict(sarimaModel_1, 20)
+forecast2=predict(sarimaModel_2, 20)
+```
+
+```{r}
+f1<-meanf(train_series, h=11) #mean
+checkresiduals(f1)
+f2<-naive(train_series, h=11) # naive method
+checkresiduals(f2)
+
+autoplot(train_series) +
+  autolayer(meanf(train_series, h=11),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(train_series, h=11),
+            series="Naïve", PI=FALSE) +
+  ggtitle("Forecasts for quarterly beer production") +
+  xlab("Year") + ylab("Megalitres") +
+  guides(colour=guide_legend(title="Forecast"))
+```
+Clearly that my model has outperformed the benchmark model. 
+```{r}
+plot(spx_breadth_ts, col="lightblue")
+lines(fitted(fit1),col="darkgreen")
+lines((forecast1$pred),col='red', lwd=2)
+legend(x = "topleft", legend = c("spx breadth", "fit1","fit2"), fill = 3:1)
+```
 

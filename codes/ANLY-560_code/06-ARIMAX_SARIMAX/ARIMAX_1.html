@@ -9,7 +9,6 @@
 
 <title>ARIMAX</title>
 <style>
-.child-top { background-image: url('https://www.georgetown.edu/wp-content/uploads/2019/09/20150324-Campus_0006-2-2000x1125-c--dark-default.jpg');height: 230px;margin: 0%;display: flex;flex-direction: row;justify-content:space-between} 
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -110,25 +109,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </head>
 
 <body>
-  <div class="child-top">  
-    <div class = subtitle>
-      <p style="font-size:70px ;color:#d6d3c9;padding-left: 100px;padding-top: 30px;border-right: 6px solid #d6d3c9 ;padding-right: 30px;">
-     ARIMAX and VAR
-      </p>
-  </div>
-
-<div class="last-word" style="padding-right:100px ;padding-top: 30px;">
-    <h1 style="color: #d6d3c9;text-align:right;">
-          ANLY-560 Time Series 
-    </h1>
-    <p style="color:grey;margin-top: -15px;text-align:right;">
-        <a href="../0-Time_index/index.html">Return to the Home page</a>
-    </p>
-    <p style = "color:whitesmoke; font-weight:200; font-size: 16px;text-align:right" >
-      &copy; 2023, hosted by GU domain
-     </p>        
-    </div>
-</div>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
@@ -148,6 +128,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ARIMAX</h1>
+</div>
+
 
 
 <div class="quarto-title-meta">
@@ -167,33 +151,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3 class="anchored" data-anchor-id="vector-autoregression-var">Vector autoregression (VAR)</h3>
 <p>I decide to use VAR model because, the model captures the linear dependencies between the different time series. The main assumption in VAR is that all variables are endogenous, meaning that they are influenced by each other, which I believe is the case for my analysis.</p>
 </section>
-<section id="literature-review" class="level3">
-  <h3 class="anchored" data-anchor-id="literature-review">Literature Review</h3>
-  <p>This literature review aims to provide insights into the choice of the Vector Autoregression (VAR) model as a preferred method for predicting stock market time series data. We will discuss the advantages of the VAR model, its use in the existing literature, and its performance in comparison to other time series models. The review will also highlight the limitations and potential improvements for the VAR model in the context of stock market prediction.</p>
-  <p>The prediction of stock market behavior has been an area of interest for researchers, investors, and financial institutions. Several models have been proposed to analyze time series data in order to forecast stock market movements. Among them, the Vector Autoregression (VAR) model has emerged as a popular choice. VAR models have been widely used in economics and finance to analyze the dynamic relationships between multiple time series variables (Sims, 1980).</p>
-  <ol type="1">
-  <li>Advantages of VAR model:</li>
-  </ol>
-  <ul>
-  <li>Multivariate framework: Unlike univariate models like ARIMA, the VAR model incorporates the interdependencies between multiple variables, allowing for a more comprehensive understanding of the underlying relationships (Lütkepohl, 2005).</li>
-  <li>Flexibility: The VAR model does not impose strong theoretical assumptions about the relationship between the variables, which makes it a flexible choice for diverse applications (Hamilton, 1994).</li>
-  <li>Impulse response functions: The model allows for the analysis of impulse response functions, which can be helpful in understanding the dynamic responses of the system to shocks (Sims, 1980).</li>
-  </ul>
-  <ol start="2" type="1">
-  <li>Use of VAR model in existing literature:</li>
-  </ol>
-  <ul>
-  <li>Stock market prediction: Various studies have employed VAR models for stock market predictions, such as Yüksel et al.&nbsp;(2015), who used a VAR model to predict stock prices in the Turkish stock market.</li>
-  <li>Economic forecasting: The VAR model has been widely used in predicting macroeconomic variables, such as interest rates, inflation, and GDP (Stock &amp; Watson, 2001; Bernanke, 2005).</li>
-  </ul>
-  <ol start="3" type="1">
-  <li>Limitations and potential improvements:</li>
-  </ol>
-  <ul>
-  <li>High-dimensionality issues: As the number of variables in the VAR model increases, the model’s complexity and computational requirements grow, leading to potential overfitting issues (Kilian &amp; Lütkepohl, 2017).</li>
-  <li>Nonlinear relationships: The VAR model assumes linearity in relationships between variables, which may not always hold true, limiting its applicability (Terasvirta, 1994).</li>
-  </ul>
-  </section>
 <section id="data-processing" class="level3">
 <h3 class="anchored" data-anchor-id="data-processing">Data Processing</h3>
 <div class="cell">
