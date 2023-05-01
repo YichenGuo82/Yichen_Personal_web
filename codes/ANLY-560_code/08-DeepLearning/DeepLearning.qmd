@@ -1,0 +1,402 @@
+---
+title: "Deep learning in Time Series"
+format: 
+  html:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+      df_print: paged
+    embed-resources: true
+    theme: custom.scss
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    highlight-style: github
+reference-location: margin
+---
+
+## Introduction
+
+in this section, I will use the same uni-variate time-series data that was used in the previous models (ARIMA), the market-breadth measurement of the SPX since 2020-04-07. Thus we can have a better understanding of the effectiveness of deep learning in this kind of time-series data. As something that was known for it's accuacry, I'm wondering does the deep learning model we testing out today, connected dense model, drop-out regularized GRU and bidirectional LSTM (RNN, GRU, and LSTM) will outperform the model that especially used in time-series analysis like the ARIMA and VAR models in the previous sections. 
+
+## Data preparation
+
+### Load the data and packages
+```{python}
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import layers
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.preprocessing import sequence
+from sklearn.metrics import mean_squared_error
+import math
+```
+
+```{python}
+# Read in the data from the csv file
+data = pd.read_csv('spy_breadth.csv')
+
+# Select the 'Date' and 'Breadth' columns
+data = data[['Date', 'Breadth']]
+
+# Convert the 'Date' column to datetime format
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Set the 'Date' column as the index
+data.set_index('Date', inplace=True)
+```
+
+### Data parsing and normalization
+
+```{python}
+mean = data['Breadth'].mean()
+data['Breadth'] -= mean
+std = data['Breadth'].std()
+data['Breadth'] /= std
+
+# Convert the DataFrame to a NumPy array
+float_data = data['Breadth'].values.reshape(-1, 1)
+```
+
+After loading the market breadth data, the array has been prasing and normalized for a better calculation efficiency in the later stages.
+
+## Model preparation
+
+### Generator yileding timeseries samples and their targets
+
+```{python}
+def generator(data, lookback, delay, min_index, max_index,
+              shuffle=False, batch_size=128, step=6):
+    
+    # data —The original array of floating-point data (normalized)
+    # lookback - How many timesteps back the input data should go
+    # delay - How many timesteps in the future the target should be.
+    # min_index and max_index - Indices in the data array that delimite which timestep to draw from. This is useful for keeping a segemtn of the data for validation and another for testing.
+    # shuffle - Whether to shuffle the samples ot draw them in chronological order.
+    # batch_size - The number of samples per batch
+    # step - The period, in timsteps, at which you sample data. You'll set it to 6 in order to draw one daya point every hour          
+
+    if max_index is None:
+        max_index = len(data) - delay - 1
+    i = min_index + lookback
+    # print("HERE")
+    while 1:
+        if shuffle:
+            rows = np.random.randint(
+                min_index + lookback, max_index, size=batch_size)
+            # print(rows); exit()
+        else:
+            if i + batch_size >= max_index:
+                i = min_index + lookback
+            rows = np.arange(i, min(i + batch_size, max_index))
+            i += len(rows)
+
+        #print(rows); # exit()
+        samples = np.zeros((len(rows),
+                           lookback // step,
+                           data.shape[-1]))
+        targets = np.zeros((len(rows),))
+
+        for j, row in enumerate(rows):
+            indices = range(rows[j] - lookback, rows[j], step)
+            samples[j] = data[indices]
+            targets[j] = data[rows[j] + delay][0]
+        #@print("here"); # exit()
+
+        yield samples, targets
+
+```
+
+```{python}
+def generator(data, lookback, delay, min_index, max_index,
+              shuffle=False, batch_size=128, step=6, stop_at_max_index=False):
+
+    if max_index is None:
+        max_index = len(data) - delay - 1
+    i = min_index + lookback
+
+    while 1:
+        if shuffle:
+            rows = np.random.randint(
+                min_index + lookback, max_index, size=batch_size)
+        else:
+            if i + batch_size >= max_index:
+                if stop_at_max_index:
+                    break
+                i = min_index + lookback
+            rows = np.arange(i, min(i + batch_size, max_index))
+            i += len(rows)
+
+        samples = np.zeros((len(rows),
+                            lookback // step,
+                            data.shape[-1]))
+        targets = np.zeros((len(rows),))
+
+        for j, row in enumerate(rows):
+            indices = range(rows[j] - lookback, rows[j], step)
+            samples[j] = data[indices]
+            targets[j] = data[rows[j] + delay][0]
+
+        yield samples, targets
+```
+
+### Preparing the training, validation , and test generators
+
+To avoid possible over fitting, I have split the dataset into train/validation data-sets and testing for the final model comparision. I will also use regularization like drop-outs on GRU to avoid over-fitting.
+
+```{python}
+# Change lookback, delay, batch_size, and step to smaller values
+lookback = 30
+step = 1
+delay = 5
+batch_size = 32
+
+# Calculate the indices for train/validation/test data
+train_val_split = int(0.6 * len(float_data))  # 60% of the data for training
+val_test_split = int(0.8 * len(float_data))   # 20% of the data for validation, 20% for testing
+
+# Calculate the validation and test steps
+val_steps = (val_test_split - train_val_split - lookback)
+test_steps = (len(float_data) - val_test_split - lookback) // batch_size
+
+# Update the indices in the generator functions
+train_gen = generator(float_data,
+                      lookback=lookback,
+                      delay=delay,
+                      min_index=0,
+                      max_index=train_val_split,
+                      shuffle=True,
+                      step=step,
+                      batch_size=batch_size)
+
+val_gen = generator(float_data,
+                    lookback=lookback,
+                    delay=delay,
+                    min_index=train_val_split,
+                    max_index=val_test_split,
+                    step=step,
+                    batch_size=batch_size)
+
+def test_gen_func():
+    return generator(float_data,
+                     lookback=lookback,
+                     delay=delay,
+                     min_index=val_test_split,
+                     max_index=None,
+                     step=step,
+                     batch_size=batch_size,
+                     stop_at_max_index=True)
+
+```
+
+## Deep Learning Modeling
+
+1. Dense Connected Model: In the context of deep learning, a dense connected model often refers to a network consisting of multiple fully connected layers (also called dense layers). These layers are composed of neurons with learned weights and biases, which are adjusted during training to minimize a loss function. However, they can be computationally expensive and prone to overfitting, especially when dealing with large datasets or high-dimensional input features. 
+
+2. Dropout-regularized GRU: The drop out means that some neurons are not updated in each training iteration, forcing the model to learn more robust and generalizable features., dropout regularization helps prevent overfitting by randomly dropping out neurons during training. It can be applied to GRUs and other RNN types. 
+
+3. Bidirectional LSTM: A bidirectional LSTM combines the benefits of LSTMs and bidirectional RNNs. It consists of two separate LSTMs, one processing the input sequence in the forward direction and the other processing it in the reverse direction. The outputs from both LSTMs are then combined. This allows the model to capture both past and future context, potentially improving performance.
+
+### Dense connnected model
+
+```{python}
+# Enable mixed precision training for speedup on NVIDIA GPUs
+from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy('mixed_float16')
+
+# Dense connected model
+dense_model = Sequential()
+dense_model.add(layers.Flatten(input_shape=(lookback // step, float_data.shape[-1])))
+dense_model.add(layers.Dense(32, activation='relu'))
+dense_model.add(layers.Dense(1, dtype='float32'))
+dense_model.add(layers.Activation('linear'))
+dense_model.compile(optimizer="RMSprop", loss='mae')
+
+dense_history = dense_model.fit(train_gen,
+                                steps_per_epoch=50,
+                                epochs=100,
+                                validation_data=val_gen,
+                                validation_steps=val_steps)
+```
+
+### Drop-out regularized GRU model
+
+```{python}
+# Drop out regularized GRU
+gru_model = Sequential()
+gru_model.add(layers.GRU(32,
+                         dropout=0.1,
+                         recurrent_dropout=0.5,
+                         return_sequences=True,
+                         input_shape=(None, float_data.shape[-1])))
+gru_model.add(layers.GRU(64, activation='relu',
+                         dropout=0.1,
+                         recurrent_dropout=0.5))
+gru_model.add(layers.Dense(1, dtype='float32'))
+gru_model.add(layers.Activation('linear'))
+gru_model.compile(optimizer=RMSprop(), loss='mae')
+
+
+# Train for more epochs and use early stopping
+from tensorflow.keras.callbacks import EarlyStopping
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=5)
+
+gru_history = gru_model.fit(train_gen,
+                            steps_per_epoch=50,
+                            epochs=50, 
+                            validation_data=val_gen,
+                            validation_steps=val_steps,
+                            callbacks=[early_stopping]) 
+```
+
+### Bidirectional LSTM
+
+```{python}
+lstm_model = Sequential()
+lstm_model.add(layers.Bidirectional(layers.LSTM(32), input_shape=(None, float_data.shape[-1])))
+lstm_model.add(layers.Dense(1, dtype='float32'))
+lstm_model.add(layers.Activation('linear'))
+lstm_model.compile(optimizer='rmsprop', loss='mae')
+
+lstm_history = lstm_model.fit(train_gen,
+                              steps_per_epoch=50,
+                              epochs=50,
+                              validation_data=val_gen,
+                              validation_steps=val_steps)
+```
+
+### Train and Validation Plot- Accuracy comparision
+
+```{python}
+import matplotlib.pyplot as plt
+
+def plot_loss(history, model_name):
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    epochs = range(1, len(loss) + 1)
+    
+    plt.plot(epochs, loss, 'bo', label='Training loss')
+    plt.plot(epochs, val_loss, 'b', label='Validation loss')
+    plt.title(f'{model_name} Training and Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Plot the training and validation loss for each model
+plot_loss(dense_history, 'Dense Connected')
+plot_loss(gru_history, 'Dropout-Regularized GRU')
+plot_loss(lstm_history, 'Bidirectional LSTM')
+```
+
+From the train and validation loss plot, it's clear that all model prone to overfit regarding this time series. However, the drop-out regularized GRU model have a slightly better result compare to the other two model when facing the unseen data.
+
+### Regularization effect and future prediction
+
+Regularization definetly help to improve the accuracy and reduce overfitting of the model, since the GRU with drop-out regularized clearly outperform the other two. I have also text some other model in the background without reguarlization like drop-out method and early stopping, the result is not ideal as I hoped for. 
+
+As for how far in the future can the deep learning accurately predict the future, I think this question dependes on the time series data been applied to the model. As for the market breadth data, I dont think deep learning can provide a reasonable prediction of the future market breadth data. However, these model might still be useful when predicing other type of data like temperatures.
+
+### Model Comparision with previous models (RMSE)
+
+```{python}
+def calculate_rmse(model, test_gen_func, test_steps):
+    n_total = 0
+    mse_sum = 0
+    test_gen = test_gen_func()
+
+    for i in range(test_steps):
+        x_test_batch, y_test_batch = next(test_gen)
+        y_pred_batch = model.predict(x_test_batch)
+        mse_batch = mean_squared_error(y_test_batch, y_pred_batch)
+        mse_sum += mse_batch * len(y_test_batch)
+        n_total += len(y_test_batch)
+
+    rmse = math.sqrt(mse_sum / n_total)
+    return rmse
+```
+
+```{python}
+dense_rmse = calculate_rmse(dense_model, test_gen_func, test_steps)
+gru_rmse = calculate_rmse(gru_model, test_gen_func, test_steps)
+lstm_rmse = calculate_rmse(lstm_model, test_gen_func, test_steps)
+
+# Display RMSE in a table
+results = pd.DataFrame({"Model": ["Dense Connected", "Dropout-regularized GRU", "Bidirectional LSTM", "ARIMA modeling", "VAR on Breadth"],
+                        "RMSE": [dense_rmse, gru_rmse, lstm_rmse,0.213,0.1107]})
+print(results)
+```
+
+### Forecast comparision
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Get the last lookback days of data (excluding the last row)
+last_lookback_data = float_data[-lookback-1:-1]
+
+# Reshape the data into a format suitable for input to the GRU model
+input_data = np.reshape(last_lookback_data, (1, lookback, float_data.shape[-1]))
+
+# Predict the next 10 days using the GRU model
+next_10_days_predictions = []
+
+for _ in range(10):
+    # Make a prediction for the next day
+    next_day_prediction = gru_model.predict(input_data)[0, 0]
+
+    # Append the prediction to the list of next 10 days predictions
+    next_10_days_predictions.append(next_day_prediction)
+
+    # Update the input data by removing the oldest day and adding the predicted day
+    input_data = np.roll(input_data, -1, axis=1)
+    input_data[0, -1, 0] = next_day_prediction
+
+# Reverse the normalization for the predicted values
+next_10_days_predictions = (np.array(next_10_days_predictions) * std) + mean
+
+# Create a new DataFrame to store the predicted data
+predicted_data = pd.DataFrame(next_10_days_predictions, columns=['Breadth'])
+
+# Add 1 day to the last date in the original data for the start date of the predictions
+start_date = data.index[-1] + pd.Timedelta(days=1)
+
+# Create a date range for the predicted data
+predicted_dates = pd.date_range(start=start_date, periods=10)
+
+# Set the index of the predicted_data DataFrame to the predicted_dates
+predicted_data['Date'] = predicted_dates
+predicted_data.set_index('Date', inplace=True)
+
+# Combine the original data and the predicted data
+combined_data = pd.concat([data, predicted_data])
+
+# Reverse the normalization for the original data
+data['Breadth'] = (data['Breadth'] * std) + mean
+
+# Plot the original data and the predictions
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Breadth'], label='Original Data', color='blue')
+plt.plot(predicted_data.index, predicted_data['Breadth'], label='Predicted Data', color='red')
+plt.xlabel('Date')
+plt.ylabel('Breadth')
+plt.legend()
+plt.show()
+
+```
+
+!["Forcast for ARIMA models"](ARIMA.png)
+
+!["Forecast for VAR model on market breadth"](var.png)
+
+In summary, the time series models, ARIMA and VAR, demonstrated better forecasting performance for this particular dataset compared to the deep learning models. This could be due to the inherent ability of time series models to capture linear patterns and seasonality in the data. However, deep learning models, such as the Dropout-regularized GRU, may still provide valuable insights and perform well in certain forecasting scenarios. It is important to consider the nature of the data and the specific problem at hand when selecting the appropriate model for forecasting.
+
+It is evident that the VAR model on Breadth has the lowest RMSE of 0.1107, followed by the ARIMA modeling with an RMSE of 0.213. This suggests that the time series models (ARIMA and VAR) have a better forecasting performance compared to the deep learning models. Although this effect might not be clear on the forecast plot.
