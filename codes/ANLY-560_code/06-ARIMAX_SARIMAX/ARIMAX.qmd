@@ -1,14 +1,20 @@
 ---
 title: "ARIMAX"
-format:
+format: 
   html:
-    code-fold: true
-    theme: custom.scss
     toc: true
     toc_float:
       collapsed: false
       smooth_scroll: true
       df_print: paged
+    embed-resources: true
+    theme: custom.scss
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    highlight-style: github
+reference-location: margin
 ---
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
@@ -114,6 +120,10 @@ I will also include **SPY** into the model since SPY is the etf that tracking th
 # Select Date, Breadth, XLF, XLK, ^VIX, SPY columns
 spx_selected <- spx_full %>%
   dplyr::select(Date, Breadth, XLF, XLK, `^VIX`, SPY)
+
+# Remove rows with missing values
+spx_selected <- spx_selected %>%
+  na.omit()
 
 tail(spx_selected)
 ```

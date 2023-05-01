@@ -1,14 +1,20 @@
 ---
 title: "ARMA/ARIMA/SARIMA MODEL"
-format:
+format: 
   html:
-    code-fold: true
-    theme: custom.scss
     toc: true
     toc_float:
       collapsed: false
       smooth_scroll: true
       df_print: paged
+    embed-resources: true
+    theme: custom.scss
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    highlight-style: github
+reference-location: margin
 ---
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
