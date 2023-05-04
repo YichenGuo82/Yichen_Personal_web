@@ -1,0 +1,66 @@
+---
+title: "Conclusion"
+format: 
+  html:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+      df_print: paged
+    embed-resources: true
+    theme: cosmo
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    fig-cap-location: top
+    highlight-style: github
+reference-location: margin
+---
+
+## The Big Picture
+
+![](Big_pic.png)
+
+The primary objective of this project was to develop a personal market breadth index and investigate its potential impact on the S&P 500. Through the course of the study, several key insights were uncovered, which hold significant implications for investors, analysts, and other stakeholders in the financial markets.
+
+## Algorithm
+
+![](algo.png)
+
+In order to create the personal market breadth index, the S&P 500 stocks were categorized into 11 sectors according to the Global Industry Classification Standard (GICS), based on their primary business activities. A Breadth score, ranging from 0 to 100, was assigned to each sector, representing the percentage of stocks with a share price above their 20-day simple moving average (20-day SMA). By comparing the number of stocks rising above their 20-day SMA to those falling below the same threshold within each sub-sector of the S&P 500, the market breadth for each sub-sector was determined. Consequently, this information was used to calculate the overall market breadth for the entire stock market. The algorithm was applied to generate market breadth data for the past two years, starting from April 7, 2020. This dataset, in combination with other financial indicators, was then utilized to draw meaningful conclusions about market trends and their potential implications for investors and financial professionals.
+
+## Correlation
+
+![](corr.png)
+
+While the custom market breadth index **did not offer a foolproof solution** to predicting market movements, it proved valuable in providing **insights into the overall market trends**. This finding can help investors make informed decisions about market trends and potential future movements, particularly when analyzed alongside other stock metrics and indicators, such as the VIX index, XLK and XLF ETF prices, and the volatility of the SPY ETF.
+
+Furthermore, the study found that market breadth is correlated with other financial market measurements, such as the VIX. This implies that market breadth indicators can provide valuable information for investors, who can use this data to better understand the underlying factors driving market trends and make more informed decisions about their investments.
+
+## Model Forecast Comparison
+
+::: {.panel-tabset}
+
+## ARIMA Model
+
+![ARIMA Model predicting Market Breadth Index](ARIMA.png)
+
+## VAR Model
+
+![VAR Model predicting Market Breadth Index](var.png)
+
+## GRU Model
+
+![GRU Model predicting Market Breadth Index](gru_prediction.png)
+:::
+
+Although the deep learning model tended to overfit the market breadth data, as evidenced by the training and validation loss plots, it produced a more accurate forecast for the market breadth index movement compared to the other two models. However, the VAR model on Breadth exhibited the lowest RMSE of 0.1107, followed by the ARIMA model with an RMSE of 0.213. This suggests that the time series models (ARIMA and VAR) offer better forecasting performance than the deep learning models, even if this distinction is not readily apparent in the forecast plots.
+
+The research revealed that different models yielded varying results in terms of forecasting performance. Time series models, such as ARIMA and VAR, demonstrated superior forecasting accuracy compared to deep learning models for this particular dataset. This insight suggests that investors should consider the model selection when analyzing market breadth data to make more accurate predictions about market trends.
+
+## Real World Connection (High Inflation and High Interest Rates)
+
+In the context of real-world economic events, it is essential to consider how market breadth indicators relate to macroeconomic factors, such as the high inflation experienced in late 2020 to early 2021 and the subsequent Federal Reserve rate hikes. By understanding the relationship between market breadth indicators and these economic events, investors can gain insights into the potential impact of such occurrences on market trends.
+
+In conclusion, the personal market breadth index developed in this project offers **valuable insights** into overall market trends and can serve as a helpful tool for investors when combined with other stock metrics and indicators. By understanding the behavior of market breadth data and its connection to real-life economic events, investors and financial professionals can make more informed decisions about market trends and potential future movements.
