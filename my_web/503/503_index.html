@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Team 26 503 Project</title>
+    <style>
+      *{
+            font-family: 'Times New Roman', Times, serif;
+            background-color:#EBECE4;
+        }
+        .cover_pic:hover {
+            transform: scale(1.2);
+        }
+        a.authorlink:link{
+            color:black ;
+        }
+        a.authorlink:visited{
+            color:black;
+        }
+        .interaction{
+            width:15%;
+            position: fixed;
+            top: 10%;
+            left: 2%;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            background-color: transparent;
+        }
+        .interaction p{
+            background-color: transparent;
+            margin-bottom: -10px;
+        }
+        .interaction h2{
+            background-color: transparent;
+        }
+
+
+        #anchor {
+            position: fixed;
+            top: 10%;
+            left: 85%;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            background-color: transparent;
+        }
+        .anchor-title.active {
+            border-left: #F2D97F 2px solid;
+            font-weight: bold;
+        }
+        .bookmark a:link{color: black;}
+        .bookmark a:visited{color: black;}
+        .bookmark a:hover{color:gray;}
+        .bookmark a{
+            text-decoration: none;
+            margin-left: 21.5px;
+            font-size: 20px;
+            font-weight:normal;
+            background-color: transparent;
+            border-left: black 2px solid;
+            padding-left: 15px;
+            margin-left: 0px;
+        }
+        .mid-part{
+            display:flex; 
+            flex-direction: row;
+            justify-content:center;
+            padding-top: 140px;
+            margin-top: 0px;
+        }
+        .blocks{
+            margin-top: 20px;
+            padding: 0px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .narrative p{
+            font-size:20px;
+        }
+        .narrative{
+            margin-bottom: 100px;
+        }
+        .visualization{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+
+            
+        }
+        .visualization iframe {
+            border: medium none;
+        }
+        .visualization p{
+            text-align: center;
+        }
+        a.switch:link{
+            color:black ;
+        }
+        a.switch:visited{color: black;}
+        a.switch:hover{background-color: #cfcfcf}
+        a.switch{
+            text-decoration: none;
+            padding: 10px;
+            background-color: #EBECE4;
+            border: 1px solid gray;
+            border-radius: 5%;
+        }
+        table{text-align: left;border-spacing: 0px;width: 850px;font-size: 18px;margin-top: 0px;color:#4a4a4a}
+        td{padding:15px}
+        thead tr{background-color:white;font-weight: bold;}
+        thead td{padding: 10px;border-bottom: black 1px solid;}
+        tbody td{padding: 8px;}
+        tbody tr:nth-child(even){background-color: white;}
+        tbody tr:hover{background-color: #9e9e9e;}
+
+    </style>
+    <script>
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig10_start');
+          var end = document.querySelector('#fig10_end');
+          var anchor = document.querySelector('#fig10');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig9_start');
+          var end = document.querySelector('#fig9_end');
+          var anchor = document.querySelector('#fig9');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig8_start');
+          var end = document.querySelector('#fig8_end');
+          var anchor = document.querySelector('#fig8');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig6_7_start');
+          var end = document.querySelector('#fig6_7_end');
+          var anchor = document.querySelector('#fig6_7');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig5_start');
+          var end = document.querySelector('#fig5_end');
+          var anchor = document.querySelector('#fig5');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig4_start');
+          var end = document.querySelector('#fig4_end');
+          var anchor = document.querySelector('#fig4');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig3_start');
+          var end = document.querySelector('#fig3_end');
+          var anchor = document.querySelector('#fig3');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+        window.addEventListener('scroll', function() {
+          var start = document.querySelector('#fig1_2_start');
+          var end = document.querySelector('#fig1_2_end');
+          var anchor = document.querySelector('#fig1_2');
+    
+          if (window.pageYOffset >= start.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+          if (window.pageYOffset >= end.offsetTop) {
+            anchor.style.display = 'none';
+          } 
+        });
+
+        window.addEventListener('scroll', function() {
+          var content = document.querySelector('#mid-part');
+          var anchor = document.querySelector('#anchor');
+    
+          if (window.pageYOffset >= content.offsetTop) {
+            anchor.style.display = 'flex';
+          } else {
+            anchor.style.display = 'none';
+          }
+        });
+
+        window.addEventListener('scroll', function() {
+        var tabs = document.querySelectorAll('.anchor-title');
+        var sections = document.querySelectorAll('.section');
+        var scrollTop = window.pageYOffset;
+
+        sections.forEach(function(section) {
+            var sectionTop = section.offsetTop - 100; 
+
+            if (scrollTop >= sectionTop) {
+            var target = section.getAttribute('id');
+            tabs.forEach(function(tab) {
+                if (tab.getAttribute('data-target') === target) {
+                tab.classList.add('active');
+                } else {
+                tab.classList.remove('active');
+        }
+      });
+    }
+  });
+});
+    </script>
+
+</head>
+
+<body>
+    <div class="bookmark" id ="anchor" >
+        <p style="font-size: 22px;margin-bottom: 10px; background-color: transparent;"> On this page</p>
+        <a href="#intro" class="anchor-title" data-target="section1">Intro</a>
+        <a href="#room" class="anchor-title" data-target="section2">Room Type Distribution</a>
+        <a href="#price" class="anchor-title" data-target="section3">Price Factor</a>
+        <a href="#reviews" class="anchor-title" data-target="section4">Reviews</a>
+        <a href="#conclusion" class="anchor-title" data-target="section5">Conclusion</a>
+        <a href="#method" class="anchor-title" data-target="section6">Method</a>
+    </div>
+
+    <div class="interaction" id ='fig1_2'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 1&2(Hover/Link):</b>
+        </p>
+        <p>   
+        Hover over a block to access information such as price, room type, availability, and listing name. Click a dot or a bar to filter the specific type.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig3'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 3(Hover/Zoom): </b>
+        </p>   
+        <p> 
+            Hover over the map to see the name of neighborhoods and the average listing price in the areas.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig4'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 4(Hover/Zoom): </b> 
+        </p>
+        <p>    
+            If you hover your mouse over the dot you can see all kinds of information about the room.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig5'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 5(Hover/Zoom): </b>
+        </p>
+        <p>
+            <b>Innovation Plot </b>
+        </p>
+        <p>    
+            Hover over a block to view the date and average price, and select an area to access more detailed information.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig6_7'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 6&7 (Hover for Pattern/Link for Relationship):</b>
+        </p>
+        <p>    
+            Hover over a point to view the detail, select a area in 'relationship' to see the corresponding point in the other plot.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig8'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 8 (Select):</b>
+        </p>
+        <p>    
+            Select a particular segment across multiple lines to choose specific reviews.
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig9'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 9 (Hover/Zoom):</b>
+        </p>
+        <p>    
+            Hover over a block to see the information, select a area to see details
+        </p>
+    </div>
+
+    <div class="interaction" id ='fig10'>
+        <h2 style="margin-bottom: 0;"> How to interact?</h2>
+        <p>
+            <b>Figure 10 (Hover/Zoom):</b>
+        </p>
+        <p>    
+            Hover over the map to see the name of neighborhoods and the average review score in the areas.
+        </p>
+    </div>
+
+
+    <!-- The cover of the project -->
+    <div class="cover" id="cover">
+        <p style="text-align:center;margin-bottom: 100px;">
+            Georgetown University | MSDSA - Adv Data Visualization Final Project
+        </p>
+
+        <div style="display:flex; flex-direction: row;justify-content:center;margin-bottom: 100px;">
+            <div class="cover_words" style="width: 25%;margin-top: 10%;margin-right: 40px;">
+                <p style="font-size: 30px;">
+                    WOW, fantastic city! But where should I stay?
+                </p>
+                <p style="font-size: 18px;">
+                    Imagine you are planning a trip to Washington, D.C.. In order to immerse yourself in the local culture, you have decided to book a house on Airbnb. To ensure that you have the best possible experience, you are carefully reviewing all available information, including reviews, maps, prices and other details, before making your final selection.
+                </p>
+            </div>
+            <img src="../img/cover.png" style="width: 33%;margin-left: 40px;transition: all 0.1s ease-in-out;" alt="cover" class="cover_pic"> 
+        </div>
+
+        <p style="text-align: center;margin-bottom: 50px;">By 
+            <a href="https://gpa4.georgetown.domains/501-project-website/about.html" class="authorlink">Yifan Bian</a>,
+            <a href="https://yicheng.georgetown.domains/my_web/" class="authorlink">Yichen Guo</a>,
+            <a>Ting Huang</a>,
+            <a>Xingyang Liu</a>
+        </p>
+    </div>
+    <hr>
+    <div class="mid-part" id="mid-part">
+        <div ></div>
+        <!-- visualization and caption -->
+        <div class='content' style="width: 60%;" >
+            <section class="section" id ="section1">
+                <a name="intro"><h1 style="font-size: 34px;">Intro</h1></a>
+                <div class="narrative" style="margin-bottom: 100px;">
+                    <p>Airbnb has undoubtedly become the go-to platform for travelers seeking a comfortable and authentic experience when visiting new places. For both the Washington D.C. community and travel enthusiasts exploring the continent, Airbnb offers a wide range of accommodations to suit every taste and budget. 
+                    </p>
+                    <p>
+                        In this visual exploration, we will guide you through the diverse Airbnb listings available in and around the nation's capital, delving into the different room types, factors influencing price, and guest reviews. Join us in uncovering the secrets to finding the perfect Airbnb listing and learn how to make the most of your next visit to this historic city.
+                    </p>
+                    <p>Our goals are:</p>
+                    <p>1. Let readers understand the business status of Airbnb through data visualization, hoping that the audience can interact with our visual charts to better understand the various Airbnb room types in the District of Columbia.</p>
+                    <p>2. Explore which factors are related to Airbnb pricing and which factors are irrelevant through data science research.</p>
+                </div>
+            </section>
+            <div id="fig1_2_start"></div>  
+            <h1>Analysis</h1>
+            <section class="section" id ="section2">
+                <a name="room"><h2>Room Type distribution</h2></a>        
+                <div class="blocks" style="width:100%;">
+                    <div class="visualization">
+                        <iframe src="../img/type_distribution.html" width="750" height="750px" ></iframe>
+                        <div id="fig1_2_end"></div>  
+                        <p style="text-align: left;margin-bottom: 0;">
+                            <b>Figure 1:</b>Interactive Map of Airbnb Listings in Washington, D.C.
+                        </p>
+                        <p style="text-align: left;margin-top: 0;">
+                            <b>Figure 2:</b> Distribution of Room Types in Washington, D.C. 
+                        </p>
+                    </div>
+                    <hr>
+                </div>
+                <div class="narrative">
+                <p>
+                    The plot clearly illustrates that the majority of Airbnb listings in Washington D.C. are Entire home/apartment options, accounting for 75.3% of the available accommodations. Meanwhile, 22.8% of hosts offer private rooms, generating additional income by sharing their living spaces with guests. Interestingly, only a small fraction of the listings, 104 out of 6,455 (1.6%), involve hosts sharing a room with strangers. Even though, this is more closely aligned with the original concept of couch sharing upon which Airbnb was founded.
+                </P>
+                </div>
+            </section>
+
+            <section class="section" id ="section3">
+                <div id="fig3_start"></div>  
+                <a name="price"><h2>Price Factor</h2></a>
+                <p style="font-size: 20px;">Price has always been one of the most important factors for people who use airbnb, and we used several charts to analyze what price factors are associated with and not associated with.</p>
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/avg_price.html" width="1000px" height="800px" ></iframe>
+
+                        <p style="text-align: left;margin-top: -140px;" id="fig3_end">
+                            <b>Figure 3:</b>Median Listing Prices by Neighbourhood
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative" id="fig4_start">
+                    <p>We use the median to mitigate the impact of extreme values. Notably, the neighborhoods of Downtown, Chinatown, Penn Quarters, Mount Vernon Square, and North Capitol Street command the highest listing prices in Washington D.C. Furthermore, listings located in the inner circle of our site tend to be more expensive than those in the outer circle.
+                    </p>
+                </div>
+
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/Price_2_Ting.html" width="135%" height="550" ></iframe>
+                        <p style="margin-top: -90px;" id="fig4_end">
+                            <b>Figure 4:</b>Relationship between room price and number of reviews, number of days available and minimum number of nights
+
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative" id ='fig5_start'>
+                    <p>
+                        The second chart shows the relationship between price and number of reviews, days available, and minimum days. This is contrary to our previous prediction. Before the analysis, we believed that more days available may be negatively correlated with price while the minimum days may be positively correlated with price. As it turns out, there is little linear relationship between price and these factors. We believe that the price may be related to the cost of room decoration, service quality and room size. These figures, however, are hard to come by and are merely predictions.
+                    </p> 
+                </div>
+
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/calendar_heatmap.html" width="100%" height="550"></iframe>
+                        <p style="margin-top: -90px;" id ='fig5_end'>
+                            <b>Figure 5:</b>Calendar Heatmap of Average Prices from Mar 2022 to Mar 2023
+
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative" id ='fig6_7_start'>
+                    <p>
+                        This plot represents the average price of all listings on a single day, with each block representing a separate day. The darkness of the color corresponds to the price, with darker shades indicating higher prices. This calendar heatmap tracks the daily average price changes over 12 months. Of particular interest is the fact that Thursdays and Fridays consistently exhibit darker colors, indicating higher prices on these days.
+                    </p> 
+                </div>
+
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/demand_price_fitted.html" name="iframe_a" frameborder="0" width="1000" height="500">
+                        </iframe>
+                        <div style="text-align: center;margin-top: -110px;margin-bottom: 20px;">
+                            <a href="../img/demand_price_fitted.html" target="iframe_a" style="margin-right: 20px;" class="switch">See Pattern</a>
+                        
+                            <a href="../img/demand_price_brushed.html" target="iframe_a" class="switch">See Relationship</a>
+                        </div>
+                        <p style="text-align: left;" id ='fig6_7_end'>
+                            <b>Figure 6 & 7:</b> Average Listing Prices (Left) and Average Review Rate (Right)  from May 2022 to May 2023 with LOESS Trendline
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative">
+                    <p>Since data on occupancy is unavailable, we computed the review rate by dividing the number of reviews by the number of listings on a given day. This allowed us to estimate the level of demand in the market.
+                    </p>    
+                    <p>
+                    The two plots can be viewed as representations of the supply and demand of listings. After applying LOESS, we observe similar seasonal trends in both plots. Specifically, both the average price and the average comment rate exhibit peaks in October and a decline from November to January. This suggests that the price fluctuations have a seasonal pattern that can be partly attributed to changes in demand.
+                    </p>
+                    <p id="fig8_start">
+                        If we filter the review ratings to only include those above 0.05, a surprising result emerges. After filtering for higher review rates, we discovered that the average price on the corresponding day was consistently lower than that of the surrounding days. This indicates that the market's supply and demand dynamics change quickly. So if you come across a reasonably priced listing, we recommend making a decision quickly, as competition is likely to be high.
+                    </p>
+                </div>
+                
+            
+            </section>
+
+            <section class="section" id ="section4"></section>
+                <a name="reviews"><h2>Reviews</h2></a>
+                <P style="font-size: 20px;">By reading reviews, we can learn how customers feel about the listings and avoid the place where the review scores are low.</P>
+                <div class="blocks">
+                    <div class="visualization">
+                        <table>
+                            <thead>
+                            <tr>
+                                <td>Category</td>
+                                <td>5 </td>
+                                <td><=4</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Accuracy </td>
+                                <td>4829</td>
+                                <td>182</td>
+                            </tr>
+                            <tr>
+                                <td>Cleanliness</td>
+                                <td>4759</td>
+                                <td>252</td>
+                            </tr>
+                            <tr>
+                                <td>Check-in</td>
+                                <td>4868</td>
+                                <td>143</td>
+                            </tr>
+                            <tr>
+                                <td>Communication</td>
+                                <td>4835</td>
+                                <td>176</td>
+                            </tr>
+                            <tr>
+                                <td>Location</td>
+                                <td>4788</td>
+                                <td>223</td>
+                            </tr>
+                            
+                        </tbody>
+                        </table>
+                        <p >
+                            <b>Table 1:</b>Review Scores Distribution
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative">
+                    <p>
+                        Overall, living in an Airbnb in D.C. is satisfactory. Most of reviews are 5, and only a few reviews are less than 4.
+                    </p>
+                </div>
+
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/parallel_coordinates.html" width="100%" height="550"></iframe>
+                        <p style="text-align: left;" id="fig8_end">
+                        <b>Figure 8:</b> Quantitative Attributes Parallel Coordinate Chart
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="narrative" id="fig9_start">
+                    <p>
+                        Parallel Coordinate Chart can be a good starting point for adding more factors to the analysis. This plot is used for plotting multivariate numerical data and finding out the relationship between them. We can see from this graph that most airbnbs that have high ratings are mostly among the highest reviews in other sections except for the position score. This implies that location has the least connection with other factors. Another not that important factor is the communication score. As we can see from the graph the score for communication is the lowest for high rating airbnbs.
+                    </p>
+                </div>
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/Correlation_Matrix.html" width="100%" height="550"></iframe>
+                        <p style="text-align: left;" id="fig9_end">
+                        <b>Figure 9:</b> Correlogram Between Quantitative Factors
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative">
+                    <p id="fig10_start">    
+                        From this correlation matrix we can see that the connection we get from last graph is correct. Notice the connection between location and other factors are relatively much smaller than all the other factors.</p>
+                </div>
+                
+                <div class="blocks">
+                    <div class="visualization">
+                        <iframe src="../img/avg_score.html" width="1000px" height="800px"></iframe>
+                        <p style="text-align: left;margin-top: -110px;">
+                        <b>Figure 10:</b> Average Review Scores by Neigbourhood
+                        </p>
+                    </div>
+                </div>
+                <div class="narrative" id="fig10_end">
+                    <p>
+                        We can see from this graph that most airbnbs that have high ratings are mostly among the highest reviews in other sections except for the position score. This implies that location has the least connection with other factors. Another not that important factor is the communication score. As we can see from the graph the score for communication is the lowest for high rating airbnbs.
+                    </p>
+                </div>
+
+            </section>
+            <section class="section" id ="section5">
+            <div class="narrative">
+                <a name="conclusion"><h1 style="font-size: 34px;">Conclusion</h1></a>
+                <p>
+                    From the above analysis, we can easily draw a conclusion. 
+                </p>
+                <p>    
+                    First of all, Airbnb has a variety of room types. However, no matter it is based on the values of the enterprise or the preferences of most consumers, in order to protect the privacy of guests, most of the listings are entire home or private room. If you think about it, as consumers, having an independent living environment is also one of the most important factors we need to consider. 
+                </p>
+                <p>    
+                    In terms of price, Airbnb rooms in the central areas of DC, including tourist areas, urban business districts and other places, have a higher price obviously, which is determined by supply and demand. There is a large demand for rooms in these areas, so the price is naturally high. The warmth of the room (as measured by the number of reviews), the number of days available, and the minimum number of nights had little to do with price. 
+                </p>
+                <p>    
+                    Finally, the price is also related to the time, because DC is also an important tourist city. Tourism has low season, and the room price is relatively low in the off-season, while the price is higher in the peak season. Finally, we analyzed the correlation between various factors of Airbnb rooms. The location factor has a relatively low relationship with other factors, because other factors, such as kitchen and cleanliness, are usually related to the room quality and the host's service attitude, but have nothing to do with location.
+                </p>
+            </div>
+            </section>
+            <section class="section" id ="section6">
+            <div class="narrative">
+                <a name="method"><h1 style="font-size: 34px;">Method</h1></a>
+                <p>
+                    In our study, plotly and altair are mainly used as visualization tools, including map_plot, bar chart, scatter chart, etc., combined with various data analysis packages in python, and finally, data storytelling is used to demonstrate the data story of airbnb in DC to the audience. Our pictures have good visualization effect and strong interactive ability to let readers more efficient access to data information.
+                </p>
+            </div>
+            </section>
+        </div>
+        <div ></div>
+    </div>
+</body>
